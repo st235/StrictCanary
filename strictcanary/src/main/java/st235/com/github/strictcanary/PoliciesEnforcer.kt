@@ -1,16 +1,36 @@
 package st235.com.github.strictcanary
 
+import android.content.Context
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.strictmode.Violation
+import androidx.annotation.WorkerThread
 import java.util.concurrent.Executors
+import st235.com.github.strictcanary.data.baseline.BaselineFormat
+import st235.com.github.strictcanary.data.baseline.BaselineResource
+import st235.com.github.strictcanary.data.baseline.StrictCanaryBaselineReader
+import st235.com.github.strictcanary.data.baseline.StrictCanaryXmlBaselineReader
+import st235.com.github.strictcanary.utils.assertNotOnMainThread
 
-class PoliciesEnforcer {
+internal class PoliciesEnforcer(
+    context: Context,
+    detectionMask: Int,
+    baselineResource: BaselineResource?,
+    baselineFormat: BaselineFormat?
+) {
 
     private val violationsExecutor = Executors.newSingleThreadExecutor()
 
     private val threadViolationListener = ThreadViolationListener()
     private val vmViolationListener = VMViolationListener()
+
+    private val violationProcessor = ViolationProcessor(
+        detectionMask = detectionMask,
+        baselineResource = baselineResource,
+        baselineReader = baselineFormat?.let { format ->
+            StrictCanaryBaselineReader.create(format, context)
+        }
+    )
 
     init {
         StrictMode.setThreadPolicy(
@@ -28,8 +48,10 @@ class PoliciesEnforcer {
         )
     }
 
-    private fun onNewViolation(v: Violation) {
-
+    @WorkerThread
+    private fun onNewViolation(violation: Violation) {
+        assertNotOnMainThread()
+        violationProcessor.process(violation)
     }
 
     private inner class ThreadViolationListener: StrictMode.OnThreadViolationListener {

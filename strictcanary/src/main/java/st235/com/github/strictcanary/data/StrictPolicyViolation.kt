@@ -26,15 +26,15 @@ import kotlinx.parcelize.Parcelize
 import st235.com.github.strictcanary.utils.asStrictPolicyViolationEntry
 
 @Parcelize
-internal data class StrictPolicyViolation(
-    val id: Int,
-    val type: Type,
-    val violationEntriesStack: List<StrictPolicyViolationEntry>
+data class StrictPolicyViolation internal constructor(
+    internal val id: Int,
+    internal val type: Type,
+    internal val violationEntriesStack: List<StrictPolicyViolationEntry>
 ): Parcelable {
 
     enum class Type(
-        val id: String,
-        val mask: Int
+        internal val id: String,
+        internal val mask: Int
     ) {
         // thread policies violations
         DISK_READ(
@@ -126,8 +126,20 @@ internal data class StrictPolicyViolation(
             mask = 0
         );
 
-        companion object {
+        internal companion object {
             const val EXPLICIT_GC_KEY = "explicitgc"
+
+            infix fun Type.with(other: Type): Int {
+                return mask or other.mask
+            }
+
+            infix fun Int.with(other: Type): Int {
+                return this or other.mask
+            }
+
+            fun Type.isMaskedBy(mask: Int): Boolean {
+                return (mask and this.mask) != 0
+            }
         }
     }
 }

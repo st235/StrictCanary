@@ -42,7 +42,9 @@ internal class StrictCanaryXmlBaselineReader(
         val xmlParser = xmlParsersFactory.newPullParser()
         xmlParser.setInput(baselineResource.open(context),  null)
 
-//        if (xmlParser.eventType != )
+        if (xmlParser.eventType == XmlPullParser.START_DOCUMENT) {
+            xmlParser.nextIgnoringText()
+        }
 
         val baselines = readAllBaselineDocuments(xmlParser)
 
@@ -55,11 +57,6 @@ internal class StrictCanaryXmlBaselineReader(
 
     private fun readAllBaselineDocuments(xmlPullParser: XmlPullParser): List<BaselineDocument> {
         val baselines = mutableListOf<BaselineDocument>()
-
-        while (xmlPullParser.eventType != XmlPullParser.START_TAG ||
-            xmlPullParser.name != KEY_ROOT_STRICT_CANARY) {
-            xmlPullParser.nextIgnoringText()
-        }
 
         while (xmlPullParser.eventType == XmlPullParser.START_TAG &&
             xmlPullParser.name == KEY_ROOT_STRICT_CANARY) {

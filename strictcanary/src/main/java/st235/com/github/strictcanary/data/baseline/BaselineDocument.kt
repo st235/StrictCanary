@@ -1,11 +1,32 @@
 package st235.com.github.strictcanary.data.baseline
 
+import st235.com.github.strictcanary.data.StrictPolicyViolation
 import st235.com.github.strictcanary.data.StrictPolicyViolationEntry
 import st235.com.github.strictcanary.data.description
 
 internal data class BaselineDocument(
     val issues: Map<String, List<Issue>>
-)
+) {
+
+    fun contains(violation: StrictPolicyViolation): Boolean {
+        val violationTypeInternalId = violation.type.id
+        val ignoredIssues: List<Issue> = issues.getOrDefault(violationTypeInternalId, emptyList())
+
+        for (issue in ignoredIssues) {
+            for (entry in violation.violationEntriesStack) {
+                if (issue.shouldIgnore(entry)) {
+                    return true
+                }
+            }
+        }
+
+        return false
+    }
+
+    companion object {
+        val EMPTY = BaselineDocument(issues = emptyMap())
+    }
+}
 
 internal sealed interface Issue {
     fun shouldIgnore(entry: StrictPolicyViolationEntry): Boolean

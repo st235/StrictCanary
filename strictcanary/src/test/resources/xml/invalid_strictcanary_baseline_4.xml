@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<strict-canary>
+    <issue id="DiskRead">
+        <ignore>b</ignore>
+        <ignore path="c" />
+        <diff_tag>a</diff_tag>
+    </issue>
+</strict-canary>

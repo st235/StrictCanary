@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<strict-canary>
+    <issue id="DiskRead">
+        <ignore>a</ignore>
+        <ignore>b</ignore>
+        <ignore path="c" />
+    </issue>
+
+    <issue id="DiskWrite">
+        <ignore>a*</ignore>
+        <ignore path="/b" />
+        <ignore>*b</ignore>
+    </issue>
+</strict-canary>
