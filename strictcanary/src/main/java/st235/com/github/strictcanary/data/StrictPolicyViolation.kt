@@ -220,6 +220,10 @@ private fun Violation.matchWithTypeByClass(): StrictPolicyViolation.Type? {
     }
 }
 
+internal fun StrictPolicyViolation.hasMyPackageEntries(context: Context): Boolean {
+    return myPackageOffset(context) >= 0
+}
+
 internal fun StrictPolicyViolation.myPackageOffset(context: Context): Int {
     return violationEntriesStack.indexOfFirst { it.isMyPackage(context) }
 }

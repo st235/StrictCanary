@@ -21,7 +21,8 @@ class StrictCanary private constructor(
             context = request.context,
             detectionMask = request.detectionMask,
             baselineFormat = request.baselineFormat,
-            baselineResource = request.baselineResource
+            baselineResource = request.baselineResource,
+            shouldDetectThirdPartyViolations = request.shouldDetectThirdPartyViolations
         )
     }
 
@@ -30,9 +31,15 @@ class StrictCanary private constructor(
         internal val context: Context
     ) {
 
+        internal var shouldDetectThirdPartyViolations: Boolean = true
         internal var detectionMask: Int = 0
         internal var baselineResource: BaselineResource? = null
         internal var baselineFormat: BaselineFormat? = null
+
+        fun shouldDetectThirdPartyViolations(shouldDetectThirdPartyViolations: Boolean): Request {
+            this.shouldDetectThirdPartyViolations = shouldDetectThirdPartyViolations
+            return this
+        }
 
         fun assetsBaseline(path: String, baselineFormat: BaselineFormat = BaselineFormat.XML): Request {
             this.baselineFormat = baselineFormat
@@ -48,11 +55,6 @@ class StrictCanary private constructor(
 
         fun detect(type: StrictPolicyViolation.Type): Request {
             detectionMask = detectionMask or type.mask
-            return this
-        }
-
-        fun detectAll(mask: Int): Request {
-            detectionMask = detectionMask or mask
             return this
         }
 

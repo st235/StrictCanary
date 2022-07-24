@@ -5,14 +5,40 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import st235.com.github.strictcanary.R
 import st235.com.github.strictcanary.data.StrictPolicyViolation
+import st235.com.github.strictcanary.data.StrictPolicyViolationEntry
+import st235.com.github.strictcanary.data.description
+import st235.com.github.strictcanary.data.isMyPackage
 import st235.com.github.strictcanary.presentation.ui.theme.StrictCanaryTheme
 
 class StrictCanaryActivity : ComponentActivity() {
@@ -29,8 +55,8 @@ class StrictCanaryActivity : ComponentActivity() {
         }
 
         private fun extractViolationFromIntent(intent: Intent): StrictPolicyViolation {
-            return intent.getParcelableExtra(ARGS_KEY_VIOLATION) ?:
-                throw IllegalStateException("This activity cannot be started without violation info")
+            return intent.getParcelableExtra(ARGS_KEY_VIOLATION)
+                ?: throw IllegalStateException("This activity cannot be started without violation info")
         }
 
     }
@@ -42,27 +68,75 @@ class StrictCanaryActivity : ComponentActivity() {
 
         setContent {
             StrictCanaryTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = { Text(text = stringResource(id = R.string.strict_canary_activity_title)) }
+                        )
+                    }
                 ) {
-                    Greeting("Android")
+                    RootView(strictPolicyViolation)
                 }
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
+    @Composable
+    internal fun RootView(strictPolicyViolation: StrictPolicyViolation) {
+        ViolationStackTraceBox(strictPolicyViolation)
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    StrictCanaryTheme {
-        Greeting("Android")
+    @Composable
+    internal fun ViolationStackTraceBox(strictPolicyViolation: StrictPolicyViolation) {
+        val verticalScrollState = rememberLazyListState()
+        val horizontalScrollState = rememberScrollState()
+
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 8.dp, vertical = 8.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colors.surface)
+        ) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                state = verticalScrollState,
+                modifier = Modifier
+                    .horizontalScroll(horizontalScrollState)
+            ) {
+                for (entry in strictPolicyViolation.violationEntriesStack) {
+                    val entryId = entry.hashCode()
+                    item(key = entryId) { ViolationStackTraceRow(entry) }
+                }
+            }
+        }
+    }
+
+    @Composable
+    internal fun ViolationStackTraceRow(strictPolicyViolationEntry: StrictPolicyViolationEntry) {
+        Row(
+            modifier = Modifier.height(IntrinsicSize.Min)
+        ) {
+            val isMyPackageEntry = strictPolicyViolationEntry.isMyPackage(applicationContext)
+
+            if (isMyPackageEntry) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_strict_canary_small_outline),
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.secondary,
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                        .fillMaxHeight()
+                )
+            }
+
+            Text(
+                text = strictPolicyViolationEntry.description,
+                fontSize = 16.sp,
+                fontWeight = if (isMyPackageEntry) FontWeight.Medium else FontWeight.Normal,
+                color = MaterialTheme.colors.onBackground,
+                modifier = Modifier
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            )
+        }
     }
 }

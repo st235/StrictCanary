@@ -16,6 +16,7 @@ import st235.com.github.strictcanary.utils.notifications.StrictPolicyNotificatio
 internal class PoliciesEnforcer(
     context: Context,
     detectionMask: Int,
+    shouldDetectThirdPartyViolations: Boolean,
     baselineResource: BaselineResource?,
     baselineFormat: BaselineFormat?
 ) {
@@ -26,6 +27,8 @@ internal class PoliciesEnforcer(
     private val vmViolationListener = VMViolationListener()
 
     private val violationProcessor = ViolationProcessor(
+        context = context,
+        shouldDetectThirdPartyViolations = shouldDetectThirdPartyViolations,
         detectionMask = detectionMask,
         baselineResource = baselineResource,
         baselineReader = baselineFormat?.let { format ->

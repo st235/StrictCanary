@@ -7,6 +7,7 @@ import android.content.Context
 import android.graphics.Typeface
 import android.os.Build
 import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -14,8 +15,10 @@ import kotlin.math.min
 import st235.com.github.strictcanary.R
 import st235.com.github.strictcanary.data.StrictPolicyViolation
 import st235.com.github.strictcanary.data.description
+import st235.com.github.strictcanary.data.isMyPackage
 import st235.com.github.strictcanary.data.myPackageOffset
 import st235.com.github.strictcanary.presentation.StrictCanaryActivity
+import st235.com.github.strictcanary.utils.applySpanForEntireString
 import st235.com.github.strictcanary.utils.localisedTitleRes
 
 internal class StrictPolicyNotificationManager(
@@ -38,9 +41,9 @@ internal class StrictPolicyNotificationManager(
         val contentIntent = StrictCanaryActivity.createIntent(context, violation)
 
         val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.FLAG_MUTABLE
+            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         } else {
-            0
+            PendingIntent.FLAG_UPDATE_CURRENT
         }
 
         val pendingContentIntent = PendingIntent.getActivity(
@@ -82,17 +85,12 @@ internal class StrictPolicyNotificationManager(
             val rawText = context.getString(R.string.strict_canary_notification_title, typeTitle)
 
             val spannableText = SpannableString(rawText)
-            spannableText.setSpan(
-                StyleSpan(Typeface.BOLD),
-                0,
-                spannableText.length,
-                SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
+            spannableText.applySpanForEntireString(StyleSpan(Typeface.BOLD))
 
             return spannableText
         }
 
-    private val StrictPolicyViolation.notificationBriefDescription: String
+    private val StrictPolicyViolation.notificationBriefDescription: CharSequence
         get() {
             val firstMyPackageEntryOffset = myPackageOffset(context)
 
@@ -103,7 +101,7 @@ internal class StrictPolicyNotificationManager(
             return violationEntriesStack[DEFAULT_STACK_TRACE_OFFSET].description
         }
 
-    private val StrictPolicyViolation.notificationLongDescription: String
+    private val StrictPolicyViolation.notificationLongDescription: CharSequence
     get()
     {
         val firstMyPackageEntryOffset = myPackageOffset(context)
@@ -114,14 +112,25 @@ internal class StrictPolicyNotificationManager(
             firstMyPackageEntryOffset
         }
 
-        val builder = StringBuilder()
+        val builder = SpannableStringBuilder()
 
         for (i in offset until min(offset + NOTIFICATION_DESCRIPTION_LINES, violationEntriesStack.size)) {
             if (i > offset) builder.append(NEW_LINE)
-            builder.append(violationEntriesStack[i].description)
+
+            val entry = violationEntriesStack[i]
+
+            val text = if (entry.isMyPackage(context)) {
+                val spannable = SpannableString(entry.description)
+                spannable.applySpanForEntireString(StyleSpan(Typeface.BOLD))
+                spannable
+            } else {
+                entry.description
+            }
+
+            builder.append(text)
         }
 
-        return builder.toString()
+        return builder
     }
 
 }

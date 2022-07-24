@@ -2,4 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="st235.com.github.strictcanary">
 
+    <application>
+        <activity android:name=".presentation.StrictCanaryActivity"
+            android:theme="@style/Theme.AppCompat.DayNight" />
+    </application>
+
 </manifest>

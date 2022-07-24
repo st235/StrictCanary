@@ -26,6 +26,6 @@
     <string name="strict_canary_type_title_unsafe_intent_launch">Unsafe Intent Launch</string>
     <string name="strict_canary_type_title_unbuffered_io">Unbuffered IO</string>
     <string name="strict_canary_type_title_unknown">Unknown</string>
-    <string name="title_activity_strict_canary">StrictCanaryActivity</string>
 
+    <string name="strict_canary_activity_title">Violation</string>
 </resources>
