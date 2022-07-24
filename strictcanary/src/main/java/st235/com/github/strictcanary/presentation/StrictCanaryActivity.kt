@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import st235.com.github.flowlayout.compose.FlowLayout
 import st235.com.github.strictcanary.R
 import st235.com.github.strictcanary.data.StrictPolicyViolation
 import st235.com.github.strictcanary.data.StrictPolicyViolationEntry
@@ -99,8 +100,7 @@ class StrictCanaryActivity : ComponentActivity() {
 
     @Composable
     internal fun ViolationTags(strictPolicyViolation: StrictPolicyViolation) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+        FlowLayout(
             modifier = Modifier
                 .padding(start = 8.dp, end = 8.dp, top = 16.dp)
         ) {
@@ -116,6 +116,7 @@ class StrictCanaryActivity : ComponentActivity() {
         Row(
             modifier = Modifier
                 .height(IntrinsicSize.Min)
+                .padding(vertical = 2.dp)
                 .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colors.secondary)
                 .padding(vertical = 4.dp)
@@ -148,6 +149,7 @@ class StrictCanaryActivity : ComponentActivity() {
         Row(
             modifier = Modifier
                 .height(IntrinsicSize.Min)
+                .padding(vertical = 2.dp)
                 .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colors.surface)
                 .padding(vertical = 4.dp)
