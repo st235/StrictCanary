@@ -9,7 +9,7 @@ import st235.com.github.strictcanary.data.baseline.BaselineResource
 import st235.com.github.strictcanary.data.baseline.RawBaselineResource
 
 class StrictCanary private constructor(
-    request: Request
+    request: Builder
 ) {
 
     private val context: Context
@@ -27,7 +27,7 @@ class StrictCanary private constructor(
     }
 
 
-    class Request(
+    class Builder(
         internal val context: Context
     ) {
 
@@ -36,24 +36,24 @@ class StrictCanary private constructor(
         internal var baselineResource: BaselineResource? = null
         internal var baselineFormat: BaselineFormat? = null
 
-        fun shouldDetectThirdPartyViolations(shouldDetectThirdPartyViolations: Boolean): Request {
+        fun shouldDetectThirdPartyViolations(shouldDetectThirdPartyViolations: Boolean): Builder {
             this.shouldDetectThirdPartyViolations = shouldDetectThirdPartyViolations
             return this
         }
 
-        fun assetsBaseline(path: String, baselineFormat: BaselineFormat = BaselineFormat.XML): Request {
+        fun assetsBaseline(path: String, baselineFormat: BaselineFormat = BaselineFormat.XML): Builder {
             this.baselineFormat = baselineFormat
             this.baselineResource = AssetsBaselineResource(path)
             return this
         }
 
-        fun rawBaseline(@RawRes rawId: Int, baselineFormat: BaselineFormat = BaselineFormat.XML): Request {
+        fun rawBaseline(@RawRes rawId: Int, baselineFormat: BaselineFormat = BaselineFormat.XML): Builder {
             this.baselineFormat = baselineFormat
             this.baselineResource = RawBaselineResource(rawId)
             return this
         }
 
-        fun detect(type: StrictPolicyViolation.Type): Request {
+        fun detect(type: StrictPolicyViolation.Type): Builder {
             detectionMask = detectionMask or type.mask
             return this
         }

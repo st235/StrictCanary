@@ -8,27 +8,27 @@ import st235.com.github.strictcanary.data.baseline.BaselineFormat
  * No op class
  */
 class StrictCanary private constructor(
-    request: Request
+    request: Builder
 ) {
 
 
-    class Request(
+    class Builder(
         internal val context: Context
     ) {
 
-        fun shouldDetectThirdPartyViolations(shouldDetectThirdPartyViolations: Boolean): Request {
+        fun shouldDetectThirdPartyViolations(shouldDetectThirdPartyViolations: Boolean): Builder {
             return this
         }
 
-        fun assetsBaseline(path: String, baselineFormat: BaselineFormat = BaselineFormat.XML): Request {
+        fun assetsBaseline(path: String, baselineFormat: BaselineFormat = BaselineFormat.XML): Builder {
             return this
         }
 
-        fun rawBaseline(rawId: Int, baselineFormat: BaselineFormat = BaselineFormat.XML): Request {
+        fun rawBaseline(rawId: Int, baselineFormat: BaselineFormat = BaselineFormat.XML): Builder {
             return this
         }
 
-        fun detect(type: StrictPolicyViolation.Type): Request {
+        fun detect(type: StrictPolicyViolation.Type): Builder {
             return this
         }
 

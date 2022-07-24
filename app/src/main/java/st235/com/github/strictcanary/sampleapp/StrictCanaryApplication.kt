@@ -12,7 +12,7 @@ class StrictCanaryApplication: Application() {
     override fun onCreate() {
         super.onCreate()
 
-        strictCanary = StrictCanary.Request(this)
+        strictCanary = StrictCanary.Builder(this)
             .detect(StrictPolicyViolation.Type.DISK_READ)
             .detect(StrictPolicyViolation.Type.DISK_WRITE)
             .build()
