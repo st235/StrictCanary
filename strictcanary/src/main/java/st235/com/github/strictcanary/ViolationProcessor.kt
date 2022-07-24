@@ -7,11 +7,13 @@ import st235.com.github.strictcanary.data.asStrictPolicyViolation
 import st235.com.github.strictcanary.data.baseline.BaselineDocument
 import st235.com.github.strictcanary.data.baseline.BaselineResource
 import st235.com.github.strictcanary.data.baseline.StrictCanaryBaselineReader
+import st235.com.github.strictcanary.utils.notifications.StrictPolicyNotificationManager
 
 internal class ViolationProcessor(
     private val detectionMask: Int,
     private val baselineResource: BaselineResource?,
-    private val baselineReader: StrictCanaryBaselineReader?
+    private val baselineReader: StrictCanaryBaselineReader?,
+    private val notificationManager: StrictPolicyNotificationManager
 ) {
 
     private val baseLine: BaselineDocument by lazy {
@@ -28,7 +30,7 @@ internal class ViolationProcessor(
 
         val type = strictPolicyViolation.type
 
-        if (type.isMaskedBy(detectionMask)) {
+        if (!type.isMaskedBy(detectionMask)) {
             return
         }
 
@@ -37,6 +39,7 @@ internal class ViolationProcessor(
         }
 
         // handle
+        notificationManager.showNotificationFor(strictPolicyViolation)
     }
 
 }

@@ -1,5 +1,6 @@
 package st235.com.github.strictcanary.data
 
+import android.content.Context
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
@@ -34,3 +35,8 @@ internal val StrictPolicyViolationEntry.description: String
         }
         return result.toString()
     }
+
+internal fun StrictPolicyViolationEntry.isMyPackage(context: Context): Boolean {
+    val packageName = context.packageName
+    return description.contains(packageName, ignoreCase = true)
+}

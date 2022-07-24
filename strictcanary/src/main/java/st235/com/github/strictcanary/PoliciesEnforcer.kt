@@ -11,6 +11,7 @@ import st235.com.github.strictcanary.data.baseline.BaselineResource
 import st235.com.github.strictcanary.data.baseline.StrictCanaryBaselineReader
 import st235.com.github.strictcanary.data.baseline.StrictCanaryXmlBaselineReader
 import st235.com.github.strictcanary.utils.assertNotOnMainThread
+import st235.com.github.strictcanary.utils.notifications.StrictPolicyNotificationManager
 
 internal class PoliciesEnforcer(
     context: Context,
@@ -29,7 +30,8 @@ internal class PoliciesEnforcer(
         baselineResource = baselineResource,
         baselineReader = baselineFormat?.let { format ->
             StrictCanaryBaselineReader.create(format, context)
-        }
+        },
+        notificationManager = StrictPolicyNotificationManager(context)
     )
 
     init {

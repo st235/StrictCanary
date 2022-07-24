@@ -1,5 +1,6 @@
 package st235.com.github.strictcanary.data
 
+import android.content.Context
 import android.os.Build
 import android.os.Parcelable
 import android.os.strictmode.CleartextNetworkViolation
@@ -83,7 +84,7 @@ data class StrictPolicyViolation internal constructor(
             id = "InstanceLeaks",
             mask = 1 shl 10
         ),
-        CREADENTIAL_LEAKS(
+        CREDENTIAL_LEAKS(
             id = "RegistrationLeaks",
             mask = 1 shl 11
         ),
@@ -142,6 +143,10 @@ data class StrictPolicyViolation internal constructor(
             }
         }
     }
+
+    internal operator fun get(index: Int): StrictPolicyViolationEntry {
+        return violationEntriesStack[index]
+    }
 }
 
 internal fun Violation.asStrictPolicyViolation(): StrictPolicyViolation {
@@ -168,7 +173,7 @@ private val Violation.type: StrictPolicyViolation.Type
             if (this is ImplicitDirectBootViolation) {
                 return StrictPolicyViolation.Type.IMPLICIT_DIRECT_BOOT
             } else if (this is CredentialProtectedWhileLockedViolation) {
-                return StrictPolicyViolation.Type.CREADENTIAL_LEAKS
+                return StrictPolicyViolation.Type.CREDENTIAL_LEAKS
             }
         }
 
@@ -213,4 +218,8 @@ private fun Violation.matchWithTypeByClass(): StrictPolicyViolation.Type? {
         is IntentReceiverLeakedViolation -> StrictPolicyViolation.Type.INTENT_RECEIVER_LEAKS
         else -> null
     }
+}
+
+internal fun StrictPolicyViolation.myPackageOffset(context: Context): Int {
+    return violationEntriesStack.indexOfFirst { it.isMyPackage(context) }
 }
