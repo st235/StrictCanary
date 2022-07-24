@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,16 +22,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import st235.com.github.strictcanary.R
@@ -87,7 +85,7 @@ class StrictCanaryActivity : ComponentActivity() {
     @Composable
     internal fun RootView(strictPolicyViolation: StrictPolicyViolation) {
         Column {
-            ViolationType(strictPolicyViolation)
+            ViolationTags(strictPolicyViolation)
             Text(
                 text = stringResource(id = R.string.strict_canary_activity_stack_trace),
                 fontSize = 26.sp,
@@ -100,13 +98,24 @@ class StrictCanaryActivity : ComponentActivity() {
     }
 
     @Composable
+    internal fun ViolationTags(strictPolicyViolation: StrictPolicyViolation) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .padding(start = 8.dp, end = 8.dp, top = 16.dp)
+        ) {
+            ViolationType(strictPolicyViolation)
+            ViolationSourceTag(strictPolicyViolation)
+        }
+    }
+
+    @Composable
     internal fun ViolationType(strictPolicyViolation: StrictPolicyViolation) {
         val type = strictPolicyViolation.type
 
         Row(
             modifier = Modifier
                 .height(IntrinsicSize.Min)
-                .padding(horizontal = 8.dp, vertical = 16.dp)
                 .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colors.secondary)
                 .padding(vertical = 4.dp)
@@ -123,7 +132,33 @@ class StrictCanaryActivity : ComponentActivity() {
                 text = stringResource(id = type.localisedTitleRes),
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colors.onSecondary,
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+            )
+        }
+    }
+
+    @Composable
+    internal fun ViolationSourceTag(strictPolicyViolation: StrictPolicyViolation) {
+        val topEntry = strictPolicyViolation.violationEntriesStack.first { it.isMyPackage(applicationContext) }
+
+        Row(
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colors.surface)
+                .padding(vertical = 4.dp)
+        ) {
+            Text(
+                text = topEntry.fileName ?: "unknown",
+                fontSize = 22.sp,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colors.onSurface,
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
             )
