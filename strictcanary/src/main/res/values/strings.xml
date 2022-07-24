@@ -28,4 +28,5 @@
     <string name="strict_canary_type_title_unknown">Unknown</string>
 
     <string name="strict_canary_activity_title">Violation</string>
+    <string name="strict_canary_activity_stack_trace">Stack Trace</string>
 </resources>

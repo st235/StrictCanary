@@ -1,6 +1,30 @@
 package st235.com.github.strictcanary.utils
 
 import androidx.annotation.StringRes
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AppsOutage
+import androidx.compose.material.icons.rounded.Book
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Description
+import androidx.compose.material.icons.rounded.DeviceUnknown
+import androidx.compose.material.icons.rounded.DoorBack
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.FileDownloadOff
+import androidx.compose.material.icons.rounded.FolderOpen
+import androidx.compose.material.icons.rounded.Launch
+import androidx.compose.material.icons.rounded.LocalOffer
+import androidx.compose.material.icons.rounded.LockOpen
+import androidx.compose.material.icons.rounded.LooksOne
+import androidx.compose.material.icons.rounded.MarkunreadMailbox
+import androidx.compose.material.icons.rounded.PedalBike
+import androidx.compose.material.icons.rounded.Public
+import androidx.compose.material.icons.rounded.RestartAlt
+import androidx.compose.material.icons.rounded.Rule
+import androidx.compose.material.icons.rounded.Save
+import androidx.compose.material.icons.rounded.Speed
+import androidx.compose.material.icons.rounded.Storage
+import androidx.compose.material.icons.rounded.Wifi
+import androidx.compose.ui.graphics.vector.ImageVector
 import st235.com.github.strictcanary.R
 import st235.com.github.strictcanary.data.StrictPolicyViolation
 
@@ -29,5 +53,32 @@ get() {
         StrictPolicyViolation.Type.INCORRECT_CONTEXT_USE -> R.string.strict_canary_type_title_incorrect_context_use
         StrictPolicyViolation.Type.UNSAFE_INTENT_LAUNCH -> R.string.strict_canary_type_title_unsafe_intent_launch
         StrictPolicyViolation.Type.UNKNOWN -> R.string.strict_canary_type_title_unknown
+    }
+}
+
+internal val StrictPolicyViolation.Type.vectorIcon: ImageVector
+get() {
+    return when(this) {
+        StrictPolicyViolation.Type.DISK_READ -> Icons.Rounded.Book
+        StrictPolicyViolation.Type.DISK_WRITE -> Icons.Rounded.Save
+        StrictPolicyViolation.Type.NETWORK -> Icons.Rounded.Public
+        StrictPolicyViolation.Type.CUSTOM_SLOW_CALLS -> Icons.Rounded.Speed
+        StrictPolicyViolation.Type.RESOURCE_MISMATCH -> Icons.Rounded.Rule
+        StrictPolicyViolation.Type.UNBUFFERED_IO -> Icons.Rounded.FileDownloadOff
+        StrictPolicyViolation.Type.EXPLICIT_GC -> Icons.Rounded.Delete
+        StrictPolicyViolation.Type.SQL_OBJECT_LEAKS -> Icons.Rounded.Storage
+        StrictPolicyViolation.Type.CLOSABLE_LEAKS -> Icons.Rounded.DoorBack
+        StrictPolicyViolation.Type.INTENT_RECEIVER_LEAKS -> Icons.Rounded.MarkunreadMailbox
+        StrictPolicyViolation.Type.INSTANCE_COUNT -> Icons.Rounded.LooksOne
+        StrictPolicyViolation.Type.CREDENTIAL_LEAKS -> Icons.Rounded.LockOpen
+        StrictPolicyViolation.Type.FILE_URI_EXPOSURE -> Icons.Rounded.FolderOpen
+        StrictPolicyViolation.Type.CLEARTEXT_NETWORK -> Icons.Rounded.Wifi
+        StrictPolicyViolation.Type.CONTENT_URI_WITHOUT_PERMISSION -> Icons.Rounded.Description
+        StrictPolicyViolation.Type.UNTAGGED_SOCKET -> Icons.Rounded.LocalOffer
+        StrictPolicyViolation.Type.NON_SDK_API_USAGE -> Icons.Rounded.PedalBike
+        StrictPolicyViolation.Type.IMPLICIT_DIRECT_BOOT -> Icons.Rounded.RestartAlt
+        StrictPolicyViolation.Type.INCORRECT_CONTEXT_USE -> Icons.Rounded.AppsOutage
+        StrictPolicyViolation.Type.UNSAFE_INTENT_LAUNCH -> Icons.Rounded.Launch
+        StrictPolicyViolation.Type.UNKNOWN -> Icons.Rounded.DeviceUnknown
     }
 }

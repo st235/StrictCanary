@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -40,6 +41,8 @@ import st235.com.github.strictcanary.data.StrictPolicyViolationEntry
 import st235.com.github.strictcanary.data.description
 import st235.com.github.strictcanary.data.isMyPackage
 import st235.com.github.strictcanary.presentation.ui.theme.StrictCanaryTheme
+import st235.com.github.strictcanary.utils.localisedTitleRes
+import st235.com.github.strictcanary.utils.vectorIcon
 
 class StrictCanaryActivity : ComponentActivity() {
 
@@ -83,7 +86,48 @@ class StrictCanaryActivity : ComponentActivity() {
 
     @Composable
     internal fun RootView(strictPolicyViolation: StrictPolicyViolation) {
-        ViolationStackTraceBox(strictPolicyViolation)
+        Column {
+            ViolationType(strictPolicyViolation)
+            Text(
+                text = stringResource(id = R.string.strict_canary_activity_stack_trace),
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colors.onSurface,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
+            )
+            ViolationStackTraceBox(strictPolicyViolation)
+        }
+    }
+
+    @Composable
+    internal fun ViolationType(strictPolicyViolation: StrictPolicyViolation) {
+        val type = strictPolicyViolation.type
+
+        Row(
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
+                .padding(horizontal = 8.dp, vertical = 16.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colors.secondary)
+                .padding(vertical = 4.dp)
+        ) {
+            Icon(
+                imageVector = type.vectorIcon,
+                contentDescription = null,
+                tint = MaterialTheme.colors.onSecondary,
+                modifier = Modifier
+                    .padding(start = 12.dp)
+                    .fillMaxHeight()
+            )
+            Text(
+                text = stringResource(id = type.localisedTitleRes),
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colors.onSecondary,
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+            )
+        }
     }
 
     @Composable
@@ -133,7 +177,7 @@ class StrictCanaryActivity : ComponentActivity() {
                 text = strictPolicyViolationEntry.description,
                 fontSize = 16.sp,
                 fontWeight = if (isMyPackageEntry) FontWeight.Medium else FontWeight.Normal,
-                color = MaterialTheme.colors.onBackground,
+                color = MaterialTheme.colors.onSurface,
                 modifier = Modifier
                     .padding(horizontal = 8.dp, vertical = 4.dp)
             )
