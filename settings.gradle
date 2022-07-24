@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 rootProject.name = "StrictCanary"
 include ':app'
 include ':strictcanary'
+include ':strictcanary-noop'

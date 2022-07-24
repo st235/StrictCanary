@@ -1,4 +1,4 @@
-package st235.com.github.strictcanary
+package st235.com.github.strictcanary.sampleapp
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,7 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import st235.com.github.strictcanary.ui.theme.StrictCanaryTheme
+import st235.com.github.strictcanary.sampleapp.ui.theme.StrictCanaryTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

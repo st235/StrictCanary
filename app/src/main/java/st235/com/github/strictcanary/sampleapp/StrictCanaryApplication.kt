@@ -1,7 +1,8 @@
-package st235.com.github.strictcanary
+package st235.com.github.strictcanary.sampleapp
 
 import android.app.Application
 import java.io.File
+import st235.com.github.strictcanary.StrictCanary
 import st235.com.github.strictcanary.data.StrictPolicyViolation
 
 class StrictCanaryApplication: Application() {

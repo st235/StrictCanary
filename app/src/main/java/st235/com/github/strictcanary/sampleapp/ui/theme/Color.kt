@@ -1,4 +1,4 @@
-package st235.com.github.strictcanary.ui.theme
+package st235.com.github.strictcanary.sampleapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
