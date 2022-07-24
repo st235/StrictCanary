@@ -1,1 +1,5 @@
-# StrictCanary
+![Cover](./images/cover.png)
+
+# Strict Canary
+
+

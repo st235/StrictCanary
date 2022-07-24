@@ -37,6 +37,9 @@ class StrictCanaryActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val strictPolicyViolation = extractViolationFromIntent(intent)
+
         setContent {
             StrictCanaryTheme {
                 // A surface container using the 'background' color from the theme
