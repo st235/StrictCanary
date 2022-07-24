@@ -13,6 +13,13 @@ Strict Canary shows a small notification when detects strict policies violation.
 | ------------- | ------------- |
 | ![Notification Collapsed](./images/notification_collapsed.jpeg) | ![Notification Expanded](./images/notification_expanded.jpeg) |
 
+By clicking notification strict canary activity opens allowing you to see detailed stack trace and
+manage the violation.
+
+| Light  | Dark |
+| ------------- | ------------- |
+| ![Light](./images/strict_canary_activity_light.jpeg) | ![Dark](./images/strict_canary_activity_dark.jpeg) |
+
 ## Download
 
 On a side note: the library is published to __mavenCentral__ so it may be necessary to add __mavenCentral__ to
