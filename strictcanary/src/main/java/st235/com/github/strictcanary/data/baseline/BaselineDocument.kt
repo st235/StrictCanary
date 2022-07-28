@@ -1,14 +1,14 @@
 package st235.com.github.strictcanary.data.baseline
 
-import st235.com.github.strictcanary.data.StrictPolicyViolation
-import st235.com.github.strictcanary.data.StrictPolicyViolationEntry
+import st235.com.github.strictcanary.data.StrictCanaryViolation
+import st235.com.github.strictcanary.data.StrictCanaryViolationEntry
 import st235.com.github.strictcanary.data.description
 
 internal data class BaselineDocument(
     val issues: Map<String, List<Issue>>
 ) {
 
-    fun contains(violation: StrictPolicyViolation): Boolean {
+    fun contains(violation: StrictCanaryViolation): Boolean {
         val violationTypeInternalId = violation.type.id
         val ignoredIssues: List<Issue> = issues.getOrDefault(violationTypeInternalId, emptyList())
 
@@ -29,14 +29,14 @@ internal data class BaselineDocument(
 }
 
 internal sealed interface Issue {
-    fun shouldIgnore(entry: StrictPolicyViolationEntry): Boolean
+    fun shouldIgnore(entry: StrictCanaryViolationEntry): Boolean
 }
 
 internal class FileIssue(
     private val filePath: String
 ): Issue {
 
-    override fun shouldIgnore(entry: StrictPolicyViolationEntry): Boolean {
+    override fun shouldIgnore(entry: StrictCanaryViolationEntry): Boolean {
         val pathRegex = Regex(filePath)
         val fileName = entry.fileName
 
@@ -69,7 +69,7 @@ internal class EntryIssue(
     private val codeEntry: String
 ): Issue {
 
-    override fun shouldIgnore(entry: StrictPolicyViolationEntry): Boolean {
+    override fun shouldIgnore(entry: StrictCanaryViolationEntry): Boolean {
         val codeRegex = Regex(codeEntry)
         val description = entry.description
         return description.contains(codeRegex)

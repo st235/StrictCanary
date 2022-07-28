@@ -80,10 +80,12 @@ To enable Strict Canary you need to put this code to your [Application#onCreate]
     override fun onCreate() {
         super.onCreate()
 
-        strictCanary = StrictCanary.Builder(this)
-            .detect(StrictPolicyViolation.Type.DISK_READ)
-            .detect(StrictPolicyViolation.Type.DISK_WRITE)
-            .build()
+        StrictCanary.setDetectionPolicy(
+            StrictCanaryDetectionPolicy.Builder(this)
+                .detect(StrictCanaryViolation.Type.DISK_READ)
+                .detect(StrictCanaryViolation.Type.DISK_WRITE)
+                .build()
+        )
     }
 ```
 

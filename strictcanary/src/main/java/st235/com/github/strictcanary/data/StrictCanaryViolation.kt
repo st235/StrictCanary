@@ -27,10 +27,10 @@ import kotlinx.parcelize.Parcelize
 import st235.com.github.strictcanary.utils.asStrictPolicyViolationEntry
 
 @Parcelize
-data class StrictPolicyViolation internal constructor(
+data class StrictCanaryViolation internal constructor(
     internal val id: Int,
     internal val type: Type,
-    internal val violationEntriesStack: List<StrictPolicyViolationEntry>
+    internal val violationEntriesStack: List<StrictCanaryViolationEntry>
 ): Parcelable {
 
     enum class Type(
@@ -144,24 +144,24 @@ data class StrictPolicyViolation internal constructor(
         }
     }
 
-    internal operator fun get(index: Int): StrictPolicyViolationEntry {
+    internal operator fun get(index: Int): StrictCanaryViolationEntry {
         return violationEntriesStack[index]
     }
 }
 
-internal fun Violation.asStrictPolicyViolation(): StrictPolicyViolation {
+internal fun Violation.asStrictPolicyViolation(): StrictCanaryViolation {
     val violationEntriesStack = stackTrace.map { it.asStrictPolicyViolationEntry() }.toList()
 
     val id = violationEntriesStack.hashCode()
 
-    return StrictPolicyViolation(
+    return StrictCanaryViolation(
         id = id,
         type = type,
         violationEntriesStack = violationEntriesStack
     )
 }
 
-private val Violation.type: StrictPolicyViolation.Type
+private val Violation.type: StrictCanaryViolation.Type
     get() {
         val matchedTypeByClass = matchWithTypeByClass()
 
@@ -171,17 +171,17 @@ private val Violation.type: StrictPolicyViolation.Type
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (this is ImplicitDirectBootViolation) {
-                return StrictPolicyViolation.Type.IMPLICIT_DIRECT_BOOT
+                return StrictCanaryViolation.Type.IMPLICIT_DIRECT_BOOT
             } else if (this is CredentialProtectedWhileLockedViolation) {
-                return StrictPolicyViolation.Type.CREDENTIAL_LEAKS
+                return StrictCanaryViolation.Type.CREDENTIAL_LEAKS
             }
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (this is IncorrectContextUseViolation) {
-                return StrictPolicyViolation.Type.INCORRECT_CONTEXT_USE
+                return StrictCanaryViolation.Type.INCORRECT_CONTEXT_USE
             } else if (this is UnsafeIntentLaunchViolation) {
-                return StrictPolicyViolation.Type.UNSAFE_INTENT_LAUNCH
+                return StrictCanaryViolation.Type.UNSAFE_INTENT_LAUNCH
             }
         }
 
@@ -189,41 +189,41 @@ private val Violation.type: StrictPolicyViolation.Type
 
         // match test api calls
         if (firstStackTraceEntry?.contains(
-                StrictPolicyViolation.Type.EXPLICIT_GC_KEY,
+                StrictCanaryViolation.Type.EXPLICIT_GC_KEY,
                 ignoreCase = true
             ) == true
         ) {
-            return StrictPolicyViolation.Type.EXPLICIT_GC
+            return StrictCanaryViolation.Type.EXPLICIT_GC
         }
 
-        return StrictPolicyViolation.Type.UNKNOWN
+        return StrictCanaryViolation.Type.UNKNOWN
     }
 
-private fun Violation.matchWithTypeByClass(): StrictPolicyViolation.Type? {
+private fun Violation.matchWithTypeByClass(): StrictCanaryViolation.Type? {
     return when (this) {
-        is DiskReadViolation -> StrictPolicyViolation.Type.DISK_READ
-        is DiskWriteViolation -> StrictPolicyViolation.Type.DISK_WRITE
-        is NetworkViolation -> StrictPolicyViolation.Type.NETWORK
-        is CustomViolation -> StrictPolicyViolation.Type.CUSTOM_SLOW_CALLS
-        is ResourceMismatchViolation -> StrictPolicyViolation.Type.RESOURCE_MISMATCH
-        is UnbufferedIoViolation -> StrictPolicyViolation.Type.UNBUFFERED_IO
-        is CleartextNetworkViolation -> StrictPolicyViolation.Type.CLEARTEXT_NETWORK
-        is ContentUriWithoutPermissionViolation -> StrictPolicyViolation.Type.CONTENT_URI_WITHOUT_PERMISSION
-        is FileUriExposedViolation -> StrictPolicyViolation.Type.FILE_URI_EXPOSURE
-        is LeakedClosableViolation -> StrictPolicyViolation.Type.CLOSABLE_LEAKS
-        is SqliteObjectLeakedViolation -> StrictPolicyViolation.Type.SQL_OBJECT_LEAKS
-        is NonSdkApiUsedViolation -> StrictPolicyViolation.Type.NON_SDK_API_USAGE
-        is UntaggedSocketViolation -> StrictPolicyViolation.Type.UNTAGGED_SOCKET
-        is InstanceCountViolation -> StrictPolicyViolation.Type.INSTANCE_COUNT
-        is IntentReceiverLeakedViolation -> StrictPolicyViolation.Type.INTENT_RECEIVER_LEAKS
+        is DiskReadViolation -> StrictCanaryViolation.Type.DISK_READ
+        is DiskWriteViolation -> StrictCanaryViolation.Type.DISK_WRITE
+        is NetworkViolation -> StrictCanaryViolation.Type.NETWORK
+        is CustomViolation -> StrictCanaryViolation.Type.CUSTOM_SLOW_CALLS
+        is ResourceMismatchViolation -> StrictCanaryViolation.Type.RESOURCE_MISMATCH
+        is UnbufferedIoViolation -> StrictCanaryViolation.Type.UNBUFFERED_IO
+        is CleartextNetworkViolation -> StrictCanaryViolation.Type.CLEARTEXT_NETWORK
+        is ContentUriWithoutPermissionViolation -> StrictCanaryViolation.Type.CONTENT_URI_WITHOUT_PERMISSION
+        is FileUriExposedViolation -> StrictCanaryViolation.Type.FILE_URI_EXPOSURE
+        is LeakedClosableViolation -> StrictCanaryViolation.Type.CLOSABLE_LEAKS
+        is SqliteObjectLeakedViolation -> StrictCanaryViolation.Type.SQL_OBJECT_LEAKS
+        is NonSdkApiUsedViolation -> StrictCanaryViolation.Type.NON_SDK_API_USAGE
+        is UntaggedSocketViolation -> StrictCanaryViolation.Type.UNTAGGED_SOCKET
+        is InstanceCountViolation -> StrictCanaryViolation.Type.INSTANCE_COUNT
+        is IntentReceiverLeakedViolation -> StrictCanaryViolation.Type.INTENT_RECEIVER_LEAKS
         else -> null
     }
 }
 
-internal fun StrictPolicyViolation.hasMyPackageEntries(context: Context): Boolean {
+internal fun StrictCanaryViolation.hasMyPackageEntries(context: Context): Boolean {
     return myPackageOffset(context) >= 0
 }
 
-internal fun StrictPolicyViolation.myPackageOffset(context: Context): Int {
+internal fun StrictCanaryViolation.myPackageOffset(context: Context): Int {
     return violationEntriesStack.indexOfFirst { it.isMyPackage(context) }
 }

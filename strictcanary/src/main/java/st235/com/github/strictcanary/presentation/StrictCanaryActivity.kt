@@ -35,8 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import st235.com.github.flowlayout.compose.FlowLayout
 import st235.com.github.strictcanary.R
-import st235.com.github.strictcanary.data.StrictPolicyViolation
-import st235.com.github.strictcanary.data.StrictPolicyViolationEntry
+import st235.com.github.strictcanary.data.StrictCanaryViolation
+import st235.com.github.strictcanary.data.StrictCanaryViolationEntry
 import st235.com.github.strictcanary.data.description
 import st235.com.github.strictcanary.data.isMyPackage
 import st235.com.github.strictcanary.presentation.ui.theme.StrictCanaryTheme
@@ -49,14 +49,14 @@ class StrictCanaryActivity : ComponentActivity() {
 
         private const val ARGS_KEY_VIOLATION = "args.violation"
 
-        fun createIntent(context: Context, strictPolicyViolation: StrictPolicyViolation): Intent {
+        fun createIntent(context: Context, strictCanaryViolation: StrictCanaryViolation): Intent {
             val intent = Intent(context, StrictCanaryActivity::class.java)
-            intent.putExtra(ARGS_KEY_VIOLATION, strictPolicyViolation)
+            intent.putExtra(ARGS_KEY_VIOLATION, strictCanaryViolation)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK and Intent.FLAG_ACTIVITY_CLEAR_TASK)
             return intent
         }
 
-        private fun extractViolationFromIntent(intent: Intent): StrictPolicyViolation {
+        private fun extractViolationFromIntent(intent: Intent): StrictCanaryViolation {
             return intent.getParcelableExtra(ARGS_KEY_VIOLATION)
                 ?: throw IllegalStateException("This activity cannot be started without violation info")
         }
@@ -84,9 +84,9 @@ class StrictCanaryActivity : ComponentActivity() {
     }
 
     @Composable
-    internal fun RootView(strictPolicyViolation: StrictPolicyViolation) {
+    internal fun RootView(strictCanaryViolation: StrictCanaryViolation) {
         Column {
-            ViolationTags(strictPolicyViolation)
+            ViolationTags(strictCanaryViolation)
             Text(
                 text = stringResource(id = R.string.strict_canary_activity_stack_trace),
                 fontSize = 26.sp,
@@ -94,24 +94,24 @@ class StrictCanaryActivity : ComponentActivity() {
                 color = MaterialTheme.colors.onSurface,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
             )
-            ViolationStackTraceBox(strictPolicyViolation)
+            ViolationStackTraceBox(strictCanaryViolation)
         }
     }
 
     @Composable
-    internal fun ViolationTags(strictPolicyViolation: StrictPolicyViolation) {
+    internal fun ViolationTags(strictCanaryViolation: StrictCanaryViolation) {
         FlowLayout(
             modifier = Modifier
                 .padding(start = 8.dp, end = 8.dp, top = 16.dp)
         ) {
-            ViolationType(strictPolicyViolation)
-            ViolationSourceTag(strictPolicyViolation)
+            ViolationType(strictCanaryViolation)
+            ViolationSourceTag(strictCanaryViolation)
         }
     }
 
     @Composable
-    internal fun ViolationType(strictPolicyViolation: StrictPolicyViolation) {
-        val type = strictPolicyViolation.type
+    internal fun ViolationType(strictCanaryViolation: StrictCanaryViolation) {
+        val type = strictCanaryViolation.type
 
         Row(
             modifier = Modifier
@@ -143,8 +143,8 @@ class StrictCanaryActivity : ComponentActivity() {
     }
 
     @Composable
-    internal fun ViolationSourceTag(strictPolicyViolation: StrictPolicyViolation) {
-        val topEntry = strictPolicyViolation.violationEntriesStack.first { it.isMyPackage(applicationContext) }
+    internal fun ViolationSourceTag(strictCanaryViolation: StrictCanaryViolation) {
+        val topEntry = strictCanaryViolation.violationEntriesStack.first { it.isMyPackage(applicationContext) }
 
         Row(
             modifier = Modifier
@@ -168,7 +168,7 @@ class StrictCanaryActivity : ComponentActivity() {
     }
 
     @Composable
-    internal fun ViolationStackTraceBox(strictPolicyViolation: StrictPolicyViolation) {
+    internal fun ViolationStackTraceBox(strictCanaryViolation: StrictCanaryViolation) {
         val verticalScrollState = rememberLazyListState()
         val horizontalScrollState = rememberScrollState()
 
@@ -184,7 +184,7 @@ class StrictCanaryActivity : ComponentActivity() {
                 modifier = Modifier
                     .horizontalScroll(horizontalScrollState)
             ) {
-                for (entry in strictPolicyViolation.violationEntriesStack) {
+                for (entry in strictCanaryViolation.violationEntriesStack) {
                     val entryId = entry.hashCode()
                     item(key = entryId) { ViolationStackTraceRow(entry) }
                 }
@@ -193,7 +193,7 @@ class StrictCanaryActivity : ComponentActivity() {
     }
 
     @Composable
-    internal fun ViolationStackTraceRow(strictPolicyViolationEntry: StrictPolicyViolationEntry) {
+    internal fun ViolationStackTraceRow(strictPolicyViolationEntry: StrictCanaryViolationEntry) {
         Row(
             modifier = Modifier.height(IntrinsicSize.Min)
         ) {

@@ -4,7 +4,7 @@ import android.content.Context
 import kotlin.IllegalStateException
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
-import st235.com.github.strictcanary.data.StrictPolicyViolation
+import st235.com.github.strictcanary.data.StrictCanaryViolation
 
 /**
  * <strict-canary>
@@ -29,7 +29,7 @@ internal class StrictCanaryXmlBaselineReader(
     private val issuesIds: Set<String> by lazy {
         val ids = mutableSetOf<String>()
 
-        for (type in StrictPolicyViolation.Type.values()) {
+        for (type in StrictCanaryViolation.Type.values()) {
             ids.add(type.id)
         }
 

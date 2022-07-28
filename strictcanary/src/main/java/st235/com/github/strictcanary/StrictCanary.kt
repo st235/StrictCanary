@@ -1,70 +1,82 @@
 package st235.com.github.strictcanary
 
-import android.content.Context
-import androidx.annotation.RawRes
-import st235.com.github.strictcanary.data.StrictPolicyViolation
-import st235.com.github.strictcanary.data.baseline.AssetsBaselineResource
-import st235.com.github.strictcanary.data.baseline.BaselineFormat
-import st235.com.github.strictcanary.data.baseline.BaselineResource
-import st235.com.github.strictcanary.data.baseline.RawBaselineResource
+import android.os.StrictMode
+import android.os.strictmode.Violation
+import androidx.annotation.WorkerThread
+import java.util.concurrent.Executors
+import st235.com.github.strictcanary.utils.assertNotOnMainThread
 
-class StrictCanary private constructor(
-    request: Builder
-) {
+object StrictCanary {
 
-    private val context: Context
-    private val policiesEnforcer: PoliciesEnforcer
+    private val rootViolationsListener = object : ViolationsListener {
+
+        override fun onNewViolation(violation: Violation) {
+            assertNotOnMainThread()
+            strictCanaryViolationsHandler?.handle(violation)
+        }
+
+    }
+
+    private val violationsExecutor = Executors.newSingleThreadExecutor()
+
+    private val threadViolationListener = ThreadViolationListener(rootViolationsListener)
+    private val vmViolationListener = VMViolationListener(rootViolationsListener)
+
+    @Volatile
+    private var strictCanaryViolationsHandler: StrictCanaryViolationsHandler? = null
 
     init {
-        this.context = request.context
-        this.policiesEnforcer = PoliciesEnforcer(
-            context = request.context,
-            detectionMask = request.detectionMask,
-            baselineFormat = request.baselineFormat,
-            baselineResource = request.baselineResource,
-            shouldDetectThirdPartyViolations = request.shouldDetectThirdPartyViolations
+        StrictMode.setThreadPolicy(
+            StrictMode.ThreadPolicy.Builder()
+                .detectAll()
+                .penaltyListener(violationsExecutor, threadViolationListener)
+                .build()
+        )
+
+        StrictMode.setVmPolicy(
+            StrictMode.VmPolicy.Builder()
+                .detectAll()
+                .penaltyListener(violationsExecutor, vmViolationListener)
+                .build()
         )
     }
 
+    fun setDetectionPolicy(detectionRequest: StrictCanaryDetectionPolicy) {
+        strictCanaryViolationsHandler = StrictCanaryViolationsHandler(
+            strictCanaryDetectionRequest = detectionRequest
+        )
+    }
 
-    class Builder(
-        internal val context: Context
-    ) {
+    private class ThreadViolationListener(
+        private val violationsListener: ViolationsListener
+    ): StrictMode.OnThreadViolationListener {
 
-        internal var shouldDetectThirdPartyViolations: Boolean = true
-        internal var detectionMask: Int = 0
-        internal var baselineResource: BaselineResource? = null
-        internal var baselineFormat: BaselineFormat? = null
-
-        fun shouldDetectThirdPartyViolations(shouldDetectThirdPartyViolations: Boolean): Builder {
-            this.shouldDetectThirdPartyViolations = shouldDetectThirdPartyViolations
-            return this
-        }
-
-        fun assetsBaseline(path: String, baselineFormat: BaselineFormat = BaselineFormat.XML): Builder {
-            this.baselineFormat = baselineFormat
-            this.baselineResource = AssetsBaselineResource(path)
-            return this
-        }
-
-        fun rawBaseline(@RawRes rawId: Int, baselineFormat: BaselineFormat = BaselineFormat.XML): Builder {
-            this.baselineFormat = baselineFormat
-            this.baselineResource = RawBaselineResource(rawId)
-            return this
-        }
-
-        fun detect(type: StrictPolicyViolation.Type): Builder {
-            detectionMask = detectionMask or type.mask
-            return this
-        }
-
-        fun build(): StrictCanary {
-            if (detectionMask == 0) {
-                throw IllegalStateException("You should detect something")
+        override fun onThreadViolation(v: Violation?) {
+            if (v == null) {
+                return
             }
 
-            return StrictCanary(this)
+            violationsListener.onNewViolation(v)
         }
+    }
+
+    private class VMViolationListener(
+        private val violationsListener: ViolationsListener
+    ): StrictMode.OnVmViolationListener {
+
+        override fun onVmViolation(v: Violation?) {
+            if (v == null) {
+                return
+            }
+
+            violationsListener.onNewViolation(v)
+        }
+    }
+
+    private interface ViolationsListener {
+
+        @WorkerThread
+        fun onNewViolation(violation: Violation)
 
     }
 

@@ -13,7 +13,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import kotlin.math.min
 import st235.com.github.strictcanary.R
-import st235.com.github.strictcanary.data.StrictPolicyViolation
+import st235.com.github.strictcanary.data.StrictCanaryViolation
 import st235.com.github.strictcanary.data.description
 import st235.com.github.strictcanary.data.isMyPackage
 import st235.com.github.strictcanary.data.myPackageOffset
@@ -21,7 +21,7 @@ import st235.com.github.strictcanary.presentation.StrictCanaryActivity
 import st235.com.github.strictcanary.utils.applySpanForEntireString
 import st235.com.github.strictcanary.utils.localisedTitleRes
 
-internal class StrictPolicyNotificationManager(
+internal class NotificationManager(
     private val context: Context
 ) {
 
@@ -35,7 +35,7 @@ internal class StrictPolicyNotificationManager(
 
     private val notificationManager = NotificationManagerCompat.from(context)
 
-    fun showNotificationFor(violation: StrictPolicyViolation) {
+    fun showNotificationFor(violation: StrictCanaryViolation) {
         createChannelIfNecessary()
 
         val contentIntent = StrictCanaryActivity.createIntent(context, violation)
@@ -79,7 +79,7 @@ internal class StrictPolicyNotificationManager(
         notificationManager.createNotificationChannel(channel)
     }
 
-    private val StrictPolicyViolation.notificationTitle: CharSequence
+    private val StrictCanaryViolation.notificationTitle: CharSequence
         get() {
             val typeTitle = context.getString(type.localisedTitleRes)
             val rawText = context.getString(R.string.strict_canary_notification_title, typeTitle)
@@ -90,7 +90,7 @@ internal class StrictPolicyNotificationManager(
             return spannableText
         }
 
-    private val StrictPolicyViolation.notificationBriefDescription: CharSequence
+    private val StrictCanaryViolation.notificationBriefDescription: CharSequence
         get() {
             val firstMyPackageEntryOffset = myPackageOffset(context)
 
@@ -101,7 +101,7 @@ internal class StrictPolicyNotificationManager(
             return violationEntriesStack[DEFAULT_STACK_TRACE_OFFSET].description
         }
 
-    private val StrictPolicyViolation.notificationLongDescription: CharSequence
+    private val StrictCanaryViolation.notificationLongDescription: CharSequence
     get()
     {
         val firstMyPackageEntryOffset = myPackageOffset(context)

@@ -34,7 +34,7 @@ private val LightColorPalette = lightColors(
 )
 
 @Composable
-fun StrictCanaryTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+internal fun StrictCanaryTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     val colors = if (darkTheme) {
         DarkColorPalette
     } else {

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.annotation.RawRes
 import java.io.InputStream
 
-class RawBaselineResource(
+internal class RawBaselineResource(
     @RawRes
     private val rawId: Int
 ): BaselineResource {

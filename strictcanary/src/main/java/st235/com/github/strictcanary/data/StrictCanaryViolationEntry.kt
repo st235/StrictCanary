@@ -5,7 +5,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-internal data class StrictPolicyViolationEntry(
+internal data class StrictCanaryViolationEntry(
     val fileName: String?,
     val className: String,
     val methodName: String,
@@ -13,7 +13,7 @@ internal data class StrictPolicyViolationEntry(
     val isNative: Boolean
 ) : Parcelable
 
-internal val StrictPolicyViolationEntry.description: String
+internal val StrictCanaryViolationEntry.description: String
     get() {
         val result = StringBuilder()
         result.append(className).append(".").append(methodName)
@@ -36,7 +36,7 @@ internal val StrictPolicyViolationEntry.description: String
         return result.toString()
     }
 
-internal fun StrictPolicyViolationEntry.isMyPackage(context: Context): Boolean {
+internal fun StrictCanaryViolationEntry.isMyPackage(context: Context): Boolean {
     val packageName = context.packageName
     return description.contains(packageName, ignoreCase = true)
 }

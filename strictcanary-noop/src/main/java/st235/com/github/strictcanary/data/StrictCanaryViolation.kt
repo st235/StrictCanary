@@ -1,6 +1,6 @@
 package st235.com.github.strictcanary.data
 
-class StrictPolicyViolation {
+class StrictCanaryViolation {
 
     enum class Type {
         DISK_READ,
