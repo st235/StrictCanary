@@ -2,6 +2,10 @@
 
 # Strict Canary
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.st235/strictcanary/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.st235/strictcanary)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/st235/StrictCanary.svg)
+![Lines of code](https://img.shields.io/tokei/lines/github/st235/StrictCanary?style=flat-square)
+
 Strict Canary is a small tool to support soft "strict mode" enforcing. For more information see
 [Android Strict Mode](https://developer.android.com/reference/android/os/StrictMode).
 
