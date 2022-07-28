@@ -7,14 +7,16 @@ Strict Canary is a small tool to support soft "strict mode" enforcing. For more 
 
 ## Description
 
-Strict Canary shows a small notification when detects strict policies violation. See example below:
+We think that crashes or strict mode dialog windows can be really annoying, especially, in a large
+project, therefore, Strict Canary offers "soft" implementation of the strict mode. When a violation
+is detected Strict Canary will show a small and friendly notification, like, the notifications below:
 
 | Collapsed  | Expanded |
 | ------------- | ------------- |
 | ![Notification Collapsed](./images/notification_collapsed.jpeg) | ![Notification Expanded](./images/notification_expanded.jpeg) |
 
-By clicking notification strict canary activity opens allowing you to see detailed stack trace and
-manage the violation.
+Moreover, these notifications are clickable. By clicking one of them an activity will open allowing 
+you to see detailed stack trace and manage the violation better.
 
 | Light  | Dark |
 | ------------- | ------------- |
@@ -37,26 +39,33 @@ allprojects {
 
 ### Maven
 
-```groovy
-TBC
+```xml
+<dependency>
+        <groupId>com.github.st235</groupId>
+        <artifactId>strictcanary</artifactId>
+        <version>x.x.x</version>
+  <type>pom</type>
+</dependency>
 ```
 
 ### Gradle
 
 ```groovy
-TBC 
+implementation 'com.github.st235:strictcanary:x.x.x' 
 ```
 
 ### Ivy
 
-```groovy
-TBC
+```xml
+<dependency org='com.github.st235' name='strictcanary' rev='x.x.x'>
+  <artifact name='strictcanary' ext='pom' ></artifact>
+</dependency>
 ```
 
 P.S.: you can use the script below or the badge above to retrive the latest version
 
 ```bash
-curl -s http://search.maven.org/solrsearch/select?q=g:"org.apache.maven.plugins"+AND+a:"maven-compiler-plugin" |grep -Po 'latestVersion.:.\K[^"]*'
+curl -s "https://search.maven.org/solrsearch/select?q=g:com.github.st235+AND+a:strictcanary" | grep -oh '.latestVersion.:.[^"]*' | grep -oh '[0-9|.]*[0-9]$'
 ```
 
 ## Usage
@@ -64,17 +73,20 @@ curl -s http://search.maven.org/solrsearch/select?q=g:"org.apache.maven.plugins"
 ### Module
 
 Let's begin from your module configuration. As Strict Canary sends notification we don't wanna let
-our users to see them. Therefore the library provides no-op implementation to substitute Strict Canary
-in release builds.
+your users to see them and spoil their experience. In light of this prerequisite,
+the library provides __no-op implementation__ to substitute Strict Canary with a stub in release builds.
+You can use the snipped below to separate debug and release logic.
 
 ```groovy
-    debugImplementation "st235.com.github.strictcanary:strictcanary:1.0.0"
-    releaseImplementation "st235.com.github.strictcanary:strictcanary-noop:1.0.0"
+    debugImplementation "st235.com.github.strictcanary:strictcanary:x.x.x"
+    releaseImplementation "st235.com.github.strictcanary:strictcanary-noop:x.x.x"
 ```
 
 ### Configuration
 
-To enable Strict Canary you need to put this code to your [Application#onCreate](https://developer.android.com/reference/android/app/Application#onCreate()) method.
+To let the magic 🪄 happens you need to write a little code. I promise this will be only a few changes.
+You need to modify your [Application#onCreate](https://developer.android.com/reference/android/app/Application#onCreate()) method
+and provide `StrictCanaryDetectionPolicy` to `StrictCanary` global instance.
 
 ```kotlin
     override fun onCreate() {
@@ -89,13 +101,22 @@ To enable Strict Canary you need to put this code to your [Application#onCreate]
     }
 ```
 
-Basic configuration seems pretty straightforward. However, StrictCanary.Builder supports additional
-feature, like, base line file and 3rd party errors detection switcher.
+Basic configuration seems pretty straightforward. However, `StrictCanaryDetectionPolicy.Builder` supports additional
+features, like, base line file or 3rd party errors detection switcher.
 
 ### Baseline
 
-Baseline helps you to ignore some of your strict mode violations. To define a baseline file you need
-to define the issues list with their ids. You can ignore issue by file either by code line.
+You may wonder, "What should I do if there are some violations that I cannot fix right now"? 
+I have an answer for you: you need to use a baseline file.
+
+__Baseline__ is a special document that helps you to ignore some of your strict mode violations. 
+To define and use the file successfully you need to follow a few simple rules:
+
+- Every issue should use `<ignore>` tag and use either a `path` attribute that ignores the whole
+file either specify the code entry with the tag; 
+- All issues should be grouped in a group that uses `<issue>` tag. However, it is not possible to 
+define an empty group, you need to specify an `id` attribute;
+- All groups should be inside of a parental tag `<strict-canary>`.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -107,6 +128,8 @@ to define the issues list with their ids. You can ignore issue by file either by
     
 </strict-canary>
 ```
+
+P.S.: Now you're good to go. Let's do the main thread great again!
 
 ### License
 
