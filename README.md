@@ -65,7 +65,7 @@ implementation 'com.github.st235:strict-canary:x.x.x'
 </dependency>
 ```
 
-P.S.: you can use the script below or the badge above to retrive the latest version
+P.S.: you can use the script below or the badge above to retrieve the latest version
 
 ```bash
 curl -s "https://search.maven.org/solrsearch/select?q=g:com.github.st235+AND+a:strictcanary" | grep -oh '.latestVersion.:.[^"]*' | grep -oh '[0-9|.]*[0-9]$'
@@ -75,7 +75,7 @@ curl -s "https://search.maven.org/solrsearch/select?q=g:com.github.st235+AND+a:s
 
 ### Module
 
-Let's begin from your module configuration. As Strict Canary sends notification we don't wanna let
+Let's begin from your module configuration. As Strict Canary sends notifications we don't wanna let
 your users to see them and spoil their experience. In light of this prerequisite,
 the library provides __no-op implementation__ to substitute Strict Canary with a stub in release builds.
 You can use the snipped below to separate debug and release logic.
