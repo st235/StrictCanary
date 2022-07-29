@@ -3,7 +3,7 @@
 # Strict Canary
 
 ![Min Android Sdk](https://img.shields.io/badge/minSdkVersion-28-FF6E40.svg)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.st235/strictcanary/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.st235/strictcanary)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.st235/strict-canary.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.st235%22%20AND%20a:%strict-canary%22)
 
 Strict Canary is a small tool to support soft "strict mode" enforcing. For more information see
 [Android Strict Mode](https://developer.android.com/reference/android/os/StrictMode).
