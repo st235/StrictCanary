@@ -45,7 +45,7 @@ allprojects {
 ```xml
 <dependency>
         <groupId>com.github.st235</groupId>
-        <artifactId>strictcanary</artifactId>
+        <artifactId>strict-canary</artifactId>
         <version>x.x.x</version>
   <type>pom</type>
 </dependency>
@@ -54,14 +54,14 @@ allprojects {
 ### Gradle
 
 ```groovy
-implementation 'com.github.st235:strictcanary:x.x.x' 
+implementation 'com.github.st235:strict-canary:x.x.x' 
 ```
 
 ### Ivy
 
 ```xml
-<dependency org='com.github.st235' name='strictcanary' rev='x.x.x'>
-  <artifact name='strictcanary' ext='pom' ></artifact>
+<dependency org='com.github.st235' name='strict-canary' rev='x.x.x'>
+  <artifact name='strict-canary' ext='pom' ></artifact>
 </dependency>
 ```
 
@@ -81,8 +81,8 @@ the library provides __no-op implementation__ to substitute Strict Canary with a
 You can use the snipped below to separate debug and release logic.
 
 ```groovy
-    debugImplementation "st235.com.github.strictcanary:strictcanary:x.x.x"
-    releaseImplementation "st235.com.github.strictcanary:strictcanary-noop:x.x.x"
+    debugImplementation "st235.com.github:strict-canary:x.x.x"
+    releaseImplementation "st235.com.github:strict-canary-noop:x.x.x"
 ```
 
 ### Configuration
