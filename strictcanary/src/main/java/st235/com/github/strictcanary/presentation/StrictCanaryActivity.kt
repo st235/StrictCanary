@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
@@ -49,24 +51,28 @@ class StrictCanaryActivity : ComponentActivity() {
 
         private const val ARGS_KEY_VIOLATION = "args.violation"
 
-        fun createIntent(context: Context, strictCanaryViolation: StrictCanaryViolation): Intent {
+        fun createIntent(context: Context, violation: StrictCanaryViolation?): Intent {
             val intent = Intent(context, StrictCanaryActivity::class.java)
-            intent.putExtra(ARGS_KEY_VIOLATION, strictCanaryViolation)
+            if (violation != null) {
+                intent.putExtra(ARGS_KEY_VIOLATION, violation)
+            }
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK and Intent.FLAG_ACTIVITY_CLEAR_TASK)
             return intent
         }
 
-        private fun extractViolationFromIntent(intent: Intent): StrictCanaryViolation {
+        private fun extractViolationFromIntent(intent: Intent): StrictCanaryViolation? {
             return intent.getParcelableExtra(ARGS_KEY_VIOLATION)
-                ?: throw IllegalStateException("This activity cannot be started without violation info")
         }
 
     }
+
+    private val viewModel by viewModels<StrictCanaryViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val strictPolicyViolation = extractViolationFromIntent(intent)
+        viewModel.updateUiState(strictPolicyViolation)
 
         setContent {
             StrictCanaryTheme {
@@ -76,16 +82,59 @@ class StrictCanaryActivity : ComponentActivity() {
                             title = { Text(text = stringResource(id = R.string.strict_canary_activity_title)) }
                         )
                     }
-                ) {
-                    RootView(strictPolicyViolation)
+                ) { innerPaddings ->
+                    RootView(
+                        modifier = Modifier.padding(
+                            bottom = innerPaddings.calculateBottomPadding()
+                        )
+                    )
                 }
             }
         }
     }
 
     @Composable
-    internal fun RootView(strictCanaryViolation: StrictCanaryViolation) {
-        Column {
+    internal fun RootView(modifier: Modifier = Modifier) {
+        val uiState = viewModel.observeUiState().observeAsState()
+
+        when (val uiStateValue = uiState.value) {
+            is UiState.ViolationsList -> ViolationsList(uiStateValue.violations, modifier)
+            is UiState.DetailedViolation -> DetailedList(uiStateValue.violation, modifier)
+            else -> {
+                // empty on purpose
+            }
+        }
+    }
+
+    @Composable
+    internal fun ViolationsList(
+        violations: List<StrictCanaryViolation>,
+        modifier: Modifier = Modifier
+    ) {
+        LazyColumn(
+            modifier
+        ) {
+            for ((index, violation) in violations.withIndex()) {
+                item(key = index) {
+                    CountedViolationRow(violation)
+                }
+            }
+        }
+    }
+
+    @Composable
+    internal fun CountedViolationRow(violation: StrictCanaryViolation) {
+        Row {
+            Text(text = violation.violationEntriesStack.getOrNull(violation.myPackageOffset)?.description ?: violation.violationEntriesStack.first().description)
+        }
+    }
+
+    @Composable
+    internal fun DetailedList(
+        strictCanaryViolation: StrictCanaryViolation,
+        modifier: Modifier = Modifier
+    ) {
+        Column(modifier) {
             ViolationTags(strictCanaryViolation)
             Text(
                 text = stringResource(id = R.string.strict_canary_activity_stack_trace),
@@ -144,7 +193,7 @@ class StrictCanaryActivity : ComponentActivity() {
 
     @Composable
     internal fun ViolationSourceTag(strictCanaryViolation: StrictCanaryViolation) {
-        val topEntry = strictCanaryViolation.violationEntriesStack.first { it.isMyPackage(applicationContext) }
+        val topEntry = strictCanaryViolation.violationEntriesStack.first { it.isMyPackage(applicationContext.packageName) }
 
         Row(
             modifier = Modifier
@@ -197,7 +246,7 @@ class StrictCanaryActivity : ComponentActivity() {
         Row(
             modifier = Modifier.height(IntrinsicSize.Min)
         ) {
-            val isMyPackageEntry = strictPolicyViolationEntry.isMyPackage(applicationContext)
+            val isMyPackageEntry = strictPolicyViolationEntry.isMyPackage(applicationContext.packageName)
 
             if (isMyPackageEntry) {
                 Icon(

@@ -1,6 +1,5 @@
 package st235.com.github.strictcanary.data
 
-import android.content.Context
 import android.os.Build
 import android.os.Parcelable
 import android.os.strictmode.CleartextNetworkViolation
@@ -26,12 +25,19 @@ import android.os.strictmode.Violation
 import kotlinx.parcelize.Parcelize
 import st235.com.github.strictcanary.utils.asStrictPolicyViolationEntry
 
-@Parcelize
-data class StrictCanaryViolation internal constructor(
-    internal val id: Int,
-    internal val type: Type,
-    internal val violationEntriesStack: List<StrictCanaryViolationEntry>
-): Parcelable {
+sealed class StrictCanaryViolation: Parcelable {
+
+    internal abstract val id: Int
+
+    internal abstract val type: Type
+
+    internal abstract val myPackageOffset: Int
+
+    internal abstract val violationEntriesStack: List<StrictCanaryViolationEntry>
+
+    internal operator fun get(index: Int): StrictCanaryViolationEntry {
+        return violationEntriesStack[index]
+    }
 
     enum class Type(
         internal val id: String,
@@ -144,19 +150,50 @@ data class StrictCanaryViolation internal constructor(
         }
     }
 
-    internal operator fun get(index: Int): StrictCanaryViolationEntry {
-        return violationEntriesStack[index]
+    internal enum class BaselineType {
+        UNKNOWN,
+        BASELINED,
+        WHITELISTED
     }
+
 }
 
-internal fun Violation.asStrictPolicyViolation(): StrictCanaryViolation {
+@Parcelize
+internal data class UnprocessedStrictCanaryViolation internal constructor(
+    override val id: Int,
+    override val type: Type,
+    override val myPackageOffset: Int,
+    override val violationEntriesStack: List<StrictCanaryViolationEntry>
+) : StrictCanaryViolation()
+
+@Parcelize
+internal data class WhitelistedStrictCanaryViolation internal constructor(
+    override val id: Int,
+    override val type: Type,
+    override val myPackageOffset: Int,
+    override val violationEntriesStack: List<StrictCanaryViolationEntry>
+) : StrictCanaryViolation()
+
+@Parcelize
+internal data class BaselinedStrictCanaryViolation internal constructor(
+    override val id: Int,
+    override val type: Type,
+    override val myPackageOffset: Int,
+    override val violationEntriesStack: List<StrictCanaryViolationEntry>
+) : StrictCanaryViolation()
+
+internal fun Violation.asUnprocessedStrictPolicyViolation(
+    myPackageName: String
+): UnprocessedStrictCanaryViolation {
     val violationEntriesStack = stackTrace.map { it.asStrictPolicyViolationEntry() }.toList()
+    val myPackageOffset = violationEntriesStack.indexOfFirst { it.isMyPackage(myPackageName) }
 
     val id = violationEntriesStack.hashCode()
 
-    return StrictCanaryViolation(
+    return UnprocessedStrictCanaryViolation(
         id = id,
         type = type,
+        myPackageOffset = myPackageOffset,
         violationEntriesStack = violationEntriesStack
     )
 }
@@ -220,10 +257,34 @@ private fun Violation.matchWithTypeByClass(): StrictCanaryViolation.Type? {
     }
 }
 
-internal fun StrictCanaryViolation.hasMyPackageEntries(context: Context): Boolean {
-    return myPackageOffset(context) >= 0
+internal val StrictCanaryViolation.baselineType: StrictCanaryViolation.BaselineType
+get() {
+    return when (this) {
+        is UnprocessedStrictCanaryViolation -> StrictCanaryViolation.BaselineType.UNKNOWN
+        is BaselinedStrictCanaryViolation -> StrictCanaryViolation.BaselineType.BASELINED
+        is WhitelistedStrictCanaryViolation -> StrictCanaryViolation.BaselineType.WHITELISTED
+    }
 }
 
-internal fun StrictCanaryViolation.myPackageOffset(context: Context): Int {
-    return violationEntriesStack.indexOfFirst { it.isMyPackage(context) }
+internal val StrictCanaryViolation.hasMyPackageEntries: Boolean
+    get() {
+        return myPackageOffset >= 0
+    }
+
+internal fun UnprocessedStrictCanaryViolation.asBaselinedPartyViolation(): BaselinedStrictCanaryViolation {
+    return BaselinedStrictCanaryViolation(
+        id = this.id,
+        type = this.type,
+        myPackageOffset = this.myPackageOffset,
+        violationEntriesStack = this.violationEntriesStack
+    )
+}
+
+internal fun UnprocessedStrictCanaryViolation.asWhitelistedViolation(): WhitelistedStrictCanaryViolation {
+    return WhitelistedStrictCanaryViolation(
+        id = this.id,
+        type = this.type,
+        myPackageOffset = this.myPackageOffset,
+        violationEntriesStack = this.violationEntriesStack
+    )
 }

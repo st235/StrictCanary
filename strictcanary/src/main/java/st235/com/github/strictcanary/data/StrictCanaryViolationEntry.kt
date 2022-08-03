@@ -36,7 +36,6 @@ internal val StrictCanaryViolationEntry.description: String
         return result.toString()
     }
 
-internal fun StrictCanaryViolationEntry.isMyPackage(context: Context): Boolean {
-    val packageName = context.packageName
+internal fun StrictCanaryViolationEntry.isMyPackage(packageName: String): Boolean {
     return description.contains(packageName, ignoreCase = true)
 }

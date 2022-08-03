@@ -1,10 +1,11 @@
 package st235.com.github.strictcanary.utils
 
-import android.content.Context
-import android.os.strictmode.Violation
 import androidx.annotation.WorkerThread
+import st235.com.github.strictcanary.data.StrictCanaryViolation
 import st235.com.github.strictcanary.data.StrictCanaryViolation.Type.Companion.isMaskedBy
-import st235.com.github.strictcanary.data.asStrictPolicyViolation
+import st235.com.github.strictcanary.data.UnprocessedStrictCanaryViolation
+import st235.com.github.strictcanary.data.asBaselinedPartyViolation
+import st235.com.github.strictcanary.data.asWhitelistedViolation
 import st235.com.github.strictcanary.data.baseline.BaselineDocument
 import st235.com.github.strictcanary.data.baseline.BaselineResource
 import st235.com.github.strictcanary.data.baseline.StrictCanaryBaselineReader
@@ -12,7 +13,6 @@ import st235.com.github.strictcanary.data.detection.DetectionDescriptor
 import st235.com.github.strictcanary.data.hasMyPackageEntries
 
 internal class ViolationProcessor(
-    private val context: Context,
     private val detectionDescriptor: DetectionDescriptor,
     private val baselineResource: BaselineResource?,
     private val baselineReader: StrictCanaryBaselineReader?
@@ -27,17 +27,21 @@ internal class ViolationProcessor(
     }
 
     @WorkerThread
-    fun shouldProcessViolation(violation: Violation): Boolean {
-        val strictPolicyViolation = violation.asStrictPolicyViolation()
+    fun process(violation: UnprocessedStrictCanaryViolation): StrictCanaryViolation {
+        val type = violation.type
 
-        val type = strictPolicyViolation.type
-
-        return when {
+        val shouldProcessViolation = when {
             !type.isMaskedBy(detectionDescriptor.mask) -> false
             detectionDescriptor.shouldSkipThirdPartyLibraries &&
-                    !strictPolicyViolation.hasMyPackageEntries(context) -> false
-            baseLine.contains(strictPolicyViolation) -> false
+                    !violation.hasMyPackageEntries -> false
+            baseLine.contains(violation) -> false
             else -> true
+        }
+
+        return if (!shouldProcessViolation) {
+            violation.asBaselinedPartyViolation()
+        } else {
+            violation.asWhitelistedViolation()
         }
     }
 

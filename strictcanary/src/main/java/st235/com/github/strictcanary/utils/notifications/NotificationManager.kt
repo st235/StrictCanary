@@ -16,7 +16,6 @@ import st235.com.github.strictcanary.R
 import st235.com.github.strictcanary.data.StrictCanaryViolation
 import st235.com.github.strictcanary.data.description
 import st235.com.github.strictcanary.data.isMyPackage
-import st235.com.github.strictcanary.data.myPackageOffset
 import st235.com.github.strictcanary.presentation.StrictCanaryActivity
 import st235.com.github.strictcanary.utils.applySpanForEntireString
 import st235.com.github.strictcanary.utils.localisedTitleRes
@@ -92,7 +91,7 @@ internal class NotificationManager(
 
     private val StrictCanaryViolation.notificationBriefDescription: CharSequence
         get() {
-            val firstMyPackageEntryOffset = myPackageOffset(context)
+            val firstMyPackageEntryOffset = myPackageOffset
 
             if (firstMyPackageEntryOffset == -1) {
                 return violationEntriesStack[DEFAULT_STACK_TRACE_OFFSET].description
@@ -104,7 +103,7 @@ internal class NotificationManager(
     private val StrictCanaryViolation.notificationLongDescription: CharSequence
     get()
     {
-        val firstMyPackageEntryOffset = myPackageOffset(context)
+        val firstMyPackageEntryOffset = myPackageOffset
 
         val offset = if (firstMyPackageEntryOffset == -1) {
             DEFAULT_STACK_TRACE_OFFSET
@@ -119,7 +118,7 @@ internal class NotificationManager(
 
             val entry = violationEntriesStack[i]
 
-            val text = if (entry.isMyPackage(context)) {
+            val text = if (entry.isMyPackage(context.packageName)) {
                 val spannable = SpannableString(entry.description)
                 spannable.applySpanForEntireString(StyleSpan(Typeface.BOLD))
                 spannable
