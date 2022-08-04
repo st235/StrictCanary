@@ -26,17 +26,62 @@ internal class NotificationManager(
     private companion object {
         const val STRICT_CANARY_CHANNEL_ID = "notifications.channel.st235.strict_canary"
 
+        const val GROUP_NOTIFICATION_ID = 999
+
         const val DEFAULT_STACK_TRACE_OFFSET = 3
         const val NOTIFICATION_DESCRIPTION_LINES = 5
         const val NEW_LINE ='\n'
     }
 
+    internal enum class Strategy {
+        EVERY_VIOLATION,
+        GROUP
+    }
+
     private val notificationManager = NotificationManagerCompat.from(context)
 
-    fun showNotificationFor(violation: StrictCanaryViolation) {
+    fun showNotificationFor(
+        violation: StrictCanaryViolation,
+        strategy: Strategy
+    ) {
         createChannelIfNecessary()
 
-        val contentIntent = StrictCanaryActivity.createIntent(context, null)
+        when (strategy) {
+            Strategy.EVERY_VIOLATION -> showNotificationForEveryViolation(violation)
+            Strategy.GROUP -> showAggregatedNotification()
+        }
+    }
+
+    private fun showAggregatedNotification() {
+        val contentIntent = StrictCanaryActivity.createIntent(context)
+
+        val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        } else {
+            PendingIntent.FLAG_UPDATE_CURRENT
+        }
+
+        val pendingContentIntent = PendingIntent.getActivity(
+            context,
+            GROUP_NOTIFICATION_ID,
+            contentIntent,
+            pendingIntentFlags
+        )
+
+        val notification = NotificationCompat.Builder(context, STRICT_CANARY_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_strict_canary_small_outline)
+            .setContentTitle(context.getString(R.string.strict_canary_notification_group_title))
+            .setContentText(context.getString(R.string.strict_canary_notification_group_description))
+            .setContentIntent(pendingContentIntent)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(false)
+            .build()
+
+        notificationManager.notify(GROUP_NOTIFICATION_ID, notification)
+    }
+
+    private fun showNotificationForEveryViolation(violation: StrictCanaryViolation) {
+        val contentIntent = StrictCanaryActivity.createIntent(context, violation)
 
         val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
@@ -80,7 +125,7 @@ internal class NotificationManager(
     private val StrictCanaryViolation.notificationTitle: CharSequence
         get() {
             val typeTitle = context.getString(type.localisedTitleRes)
-            val rawText = context.getString(R.string.strict_canary_notification_title, typeTitle)
+            val rawText = context.getString(R.string.strict_canary_notification_every_title, typeTitle)
 
             val spannableText = SpannableString(rawText)
             spannableText.applySpanForEntireString(StyleSpan(Typeface.BOLD))

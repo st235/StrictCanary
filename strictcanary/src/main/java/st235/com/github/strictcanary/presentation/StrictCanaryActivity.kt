@@ -25,7 +25,7 @@ import st235.com.github.strictcanary.data.StrictCanaryViolation
 import st235.com.github.strictcanary.presentation.ui.screens.detailed.DetailedList
 import st235.com.github.strictcanary.presentation.ui.screens.list.ViolationsClassGroup
 import st235.com.github.strictcanary.presentation.ui.theme.StrictCanaryTheme
-import st235.com.github.strictcanary.utils.localisedDescription
+import st235.com.github.strictcanary.presentation.ui.localisedDescription
 
 class StrictCanaryActivity : ComponentActivity() {
 
@@ -33,7 +33,10 @@ class StrictCanaryActivity : ComponentActivity() {
 
         private const val ARGS_KEY_VIOLATION = "args.violation"
 
-        fun createIntent(context: Context, violation: StrictCanaryViolation?): Intent {
+        fun createIntent(
+            context: Context,
+            violation: StrictCanaryViolation? = null
+        ): Intent {
             val intent = Intent(context, StrictCanaryActivity::class.java)
             if (violation != null) {
                 intent.putExtra(ARGS_KEY_VIOLATION, violation)

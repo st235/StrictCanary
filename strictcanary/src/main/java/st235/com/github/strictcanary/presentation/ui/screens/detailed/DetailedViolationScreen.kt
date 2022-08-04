@@ -17,12 +17,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,6 +34,7 @@ import st235.com.github.flowlayout.compose.FlowLayout
 import st235.com.github.strictcanary.R
 import st235.com.github.strictcanary.data.StrictCanaryViolation
 import st235.com.github.strictcanary.data.StrictCanaryViolationEntry
+import st235.com.github.strictcanary.data.baselineType
 import st235.com.github.strictcanary.data.description
 import st235.com.github.strictcanary.utils.localisedTitleRes
 import st235.com.github.strictcanary.utils.vectorIcon
@@ -59,6 +64,9 @@ internal fun ViolationTags(strictCanaryViolation: StrictCanaryViolation) {
             .padding(start = 8.dp, end = 8.dp, top = 16.dp)
     ) {
         ViolationType(strictCanaryViolation)
+        if (strictCanaryViolation.baselineType == StrictCanaryViolation.BaselineType.BASELINED) {
+            ViolationBaselined(strictCanaryViolation)
+        }
         ViolationSourceTag(strictCanaryViolation)
     }
 }
@@ -90,6 +98,38 @@ internal fun ViolationType(strictCanaryViolation: StrictCanaryViolation) {
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colors.onSecondary,
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+        )
+    }
+}
+
+@Composable
+internal fun ViolationBaselined(strictCanaryViolation: StrictCanaryViolation) {
+    Row(
+        modifier = Modifier
+            .height(IntrinsicSize.Min)
+            .padding(vertical = 2.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colors.surface)
+            .padding(vertical = 4.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.Close,
+            contentDescription = null,
+            tint = MaterialTheme.colors.onSurface,
+            modifier = Modifier
+                .padding(start = 12.dp)
+                .fillMaxHeight()
+        )
+        Text(
+            text = stringResource(id = R.string.strict_canary_detailed_screen_tag_ignored),
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Medium,
+            style = TextStyle(textDecoration = TextDecoration.LineThrough),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            color = MaterialTheme.colors.onSurface,
             modifier = Modifier
                 .padding(horizontal = 8.dp)
         )

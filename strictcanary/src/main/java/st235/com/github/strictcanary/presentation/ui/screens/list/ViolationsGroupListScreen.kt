@@ -4,28 +4,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import st235.com.github.strictcanary.R
-import st235.com.github.strictcanary.presentation.ui.screens.OnViolationClickListener
-import st235.com.github.strictcanary.presentation.ui.screens.ViolationsGroup
-import st235.com.github.strictcanary.presentation.ui.screens.ViolationsGroupList
-import st235.com.github.strictcanary.presentation.ui.screens.ViolationsItem
-import st235.com.github.strictcanary.utils.ViolationsTree
+import st235.com.github.strictcanary.presentation.ui.screens.components.OnViolationClickListener
+import st235.com.github.strictcanary.presentation.ui.screens.components.ViolationsGroup
+import st235.com.github.strictcanary.presentation.ui.screens.components.ViolationsGroupList
+import st235.com.github.strictcanary.presentation.ui.screens.components.ViolationsItem
+import st235.com.github.strictcanary.presentation.ui.ViolationsScreensTree
 import st235.com.github.strictcanary.utils.headline
-import st235.com.github.strictcanary.utils.localisedDescription
+import st235.com.github.strictcanary.presentation.ui.localisedDescription
 
 @Composable
 internal fun ViolationsClassGroup(
-    treeNode: ViolationsTree.Node,
+    treeNode: ViolationsScreensTree.Node,
     modifier: Modifier = Modifier,
-    onViolationClickListener: OnViolationClickListener<ViolationsTree.Node>? = null
+    onViolationClickListener: OnViolationClickListener<ViolationsScreensTree.Node>? = null
 ) {
-    if (treeNode !is ViolationsTree.Node.InterimNode) {
+    if (treeNode !is ViolationsScreensTree.Node.InterimNode) {
         throw IllegalStateException("Only interim nodes can be used as first level pages nodes")
     }
 
-    val groups = mutableListOf<ViolationsGroup<ViolationsTree.Node>>()
+    val groups = mutableListOf<ViolationsGroup<ViolationsScreensTree.Node>>()
 
     for (firstLevelChild in treeNode) {
-        if (firstLevelChild !is ViolationsTree.Node.InterimNode) {
+        if (firstLevelChild !is ViolationsScreensTree.Node.InterimNode) {
             throw IllegalStateException("Only interim nodes can be used as second level pages nodes")
         }
 
@@ -33,7 +33,7 @@ internal fun ViolationsClassGroup(
             ViolationsGroup(
                 header = firstLevelChild.localisedDescription(),
                 items = firstLevelChild.map { secondLevelChild ->
-                    val header = if (secondLevelChild is ViolationsTree.Node.LeafNode) {
+                    val header = if (secondLevelChild is ViolationsScreensTree.Node.LeafNode) {
                         val reference = secondLevelChild.radixToken.value
                         val headline = reference.headline
                         stringResource(id = R.string.strict_canary_activity_list_leaf_element_line, headline.line)
@@ -44,7 +44,8 @@ internal fun ViolationsClassGroup(
                     ViolationsItem(
                         counter = header,
                         content = secondLevelChild.localisedDescription() ?: "unkown",
-                        item = secondLevelChild
+                        item = secondLevelChild,
+                        enabled = !secondLevelChild.baselined
                     )
                 }
             )

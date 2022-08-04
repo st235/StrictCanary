@@ -3,7 +3,9 @@
     <string name="strict_canary_notification_channel_title">Strict Canary Notifications</string>
     <string name="strict_canary_notification_channel_description">Strict Canary is a debug tool for android strict policies detection.</string>
 
-    <string name="strict_canary_notification_title">%s Violation Detected</string>
+    <string name="strict_canary_notification_every_title">%s Violation Detected</string>
+    <string name="strict_canary_notification_group_title">Violations Breaches Detected</string>
+    <string name="strict_canary_notification_group_description">Violations has been detected</string>
 
     <string name="strict_canary_type_title_disk_read">Disk Read</string>
     <string name="strict_canary_type_title_disk_write">Disk Write</string>
@@ -26,6 +28,8 @@
     <string name="strict_canary_type_title_unsafe_intent_launch">Unsafe Intent Launch</string>
     <string name="strict_canary_type_title_unbuffered_io">Unbuffered IO</string>
     <string name="strict_canary_type_title_unknown">Unknown</string>
+
+    <string name="strict_canary_detailed_screen_tag_ignored">Baseline ignored</string>
 
     <string name="strict_canary_activity_title">Violation</string>
     <string name="strict_canary_activity_stack_trace">Stack Trace</string>

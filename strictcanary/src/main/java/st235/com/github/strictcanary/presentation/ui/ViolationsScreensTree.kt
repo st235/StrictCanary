@@ -1,8 +1,10 @@
-package st235.com.github.strictcanary.utils
+package st235.com.github.strictcanary.presentation.ui
 
 import st235.com.github.strictcanary.data.StrictCanaryViolation
+import st235.com.github.strictcanary.data.baselineType
+import st235.com.github.strictcanary.utils.headline
 
-internal class ViolationsTree(
+internal class ViolationsScreensTree(
     violationsRadixDecompositions: List<Array<RadixCompositionToken>>
 ) {
 
@@ -37,6 +39,23 @@ internal class ViolationsTree(
         val isLeaf: Boolean
             get() {
                 return this is LeafNode
+            }
+
+        val baselined: Boolean
+            get() {
+                if (this is LeafNode) {
+                    return radixToken.value.baselineType == StrictCanaryViolation.BaselineType.BASELINED
+                } else if (this is InterimNode) {
+                    var childrenBaselined = true
+
+                    for (child in this) {
+                        childrenBaselined = childrenBaselined && child.baselined
+                    }
+
+                    return childrenBaselined
+                } else {
+                    return false
+                }
             }
 
         class InterimNode(
@@ -168,8 +187,8 @@ internal class ViolationsTree(
 
     companion object {
 
-        fun from(violations: List<StrictCanaryViolation>): ViolationsTree {
-            return ViolationsTree(
+        fun from(violations: List<StrictCanaryViolation>): ViolationsScreensTree {
+            return ViolationsScreensTree(
                 violationsRadixDecompositions = violations.map { it.radixDecomposition }
             )
         }

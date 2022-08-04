@@ -15,6 +15,7 @@ class StrictCanaryApplication: Application() {
             StrictCanaryDetectionPolicy.Builder(this)
                 .detect(StrictCanaryViolation.Type.DISK_READ)
                 .detect(StrictCanaryViolation.Type.DISK_WRITE)
+                .rawBaseline(R.raw.strictcanary_baseline)
                 .build()
         )
 

@@ -41,7 +41,7 @@ internal class StrictCanaryViolationsHandler(
         )
 
         if (processedViolation.baselineType == StrictCanaryViolation.BaselineType.WHITELISTED) {
-            notificationManager.showNotificationFor(processedViolation)
+            notificationManager.showNotificationFor(processedViolation, strictCanaryDetectionRequest.notificationStrategy)
         }
 
         strictCanaryViolationsRepository.add(processedViolation)

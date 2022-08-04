@@ -5,16 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import st235.com.github.strictcanary.data.StrictCanaryViolation
 import st235.com.github.strictcanary.data.StrictCanaryViolationsRepository
-import st235.com.github.strictcanary.utils.ViolationsTree
+import st235.com.github.strictcanary.presentation.ui.ViolationsScreensTree
 
 internal sealed interface UiState {
     class ViolationsList(
-        val treeNode: ViolationsTree.Node
+        val treeNode: ViolationsScreensTree.Node
     ) : UiState
 
     class DetailedViolation(
         val violation: StrictCanaryViolation,
-        val violationNode: ViolationsTree.Node?
+        val violationNode: ViolationsScreensTree.Node?
     ) : UiState
 }
 
@@ -31,7 +31,7 @@ internal class StrictCanaryViewModel : ViewModel() {
     fun resetState(violation: StrictCanaryViolation?) {
         uiStateLiveData.value = if (violation == null) {
             val violations = repository.snapshot
-            val violationsTree = ViolationsTree.from(violations)
+            val violationsTree = ViolationsScreensTree.from(violations)
 
             UiState.ViolationsList(treeNode = violationsTree.rootNode)
         } else {
@@ -39,8 +39,8 @@ internal class StrictCanaryViewModel : ViewModel() {
         }
     }
 
-    fun changeState(newNode: ViolationsTree.Node) {
-        uiStateLiveData.value = if (newNode is ViolationsTree.Node.LeafNode) {
+    fun changeState(newNode: ViolationsScreensTree.Node) {
+        uiStateLiveData.value = if (newNode is ViolationsScreensTree.Node.LeafNode) {
             UiState.DetailedViolation(
                 violation = newNode.radixToken.value,
                 violationNode = newNode
