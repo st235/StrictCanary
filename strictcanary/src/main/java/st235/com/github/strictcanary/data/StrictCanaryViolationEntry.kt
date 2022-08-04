@@ -10,7 +10,8 @@ internal data class StrictCanaryViolationEntry(
     val className: String,
     val methodName: String,
     val line: Int,
-    val isNative: Boolean
+    val isNative: Boolean,
+    val isMyPackage: Boolean
 ) : Parcelable
 
 internal val StrictCanaryViolationEntry.description: String
@@ -35,7 +36,3 @@ internal val StrictCanaryViolationEntry.description: String
         }
         return result.toString()
     }
-
-internal fun StrictCanaryViolationEntry.isMyPackage(packageName: String): Boolean {
-    return description.contains(packageName, ignoreCase = true)
-}

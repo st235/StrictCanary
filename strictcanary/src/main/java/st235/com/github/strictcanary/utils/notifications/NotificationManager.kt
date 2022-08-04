@@ -15,7 +15,6 @@ import kotlin.math.min
 import st235.com.github.strictcanary.R
 import st235.com.github.strictcanary.data.StrictCanaryViolation
 import st235.com.github.strictcanary.data.description
-import st235.com.github.strictcanary.data.isMyPackage
 import st235.com.github.strictcanary.presentation.StrictCanaryActivity
 import st235.com.github.strictcanary.utils.applySpanForEntireString
 import st235.com.github.strictcanary.utils.localisedTitleRes
@@ -37,7 +36,7 @@ internal class NotificationManager(
     fun showNotificationFor(violation: StrictCanaryViolation) {
         createChannelIfNecessary()
 
-        val contentIntent = StrictCanaryActivity.createIntent(context, violation)
+        val contentIntent = StrictCanaryActivity.createIntent(context, null)
 
         val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
@@ -118,7 +117,7 @@ internal class NotificationManager(
 
             val entry = violationEntriesStack[i]
 
-            val text = if (entry.isMyPackage(context.packageName)) {
+            val text = if (entry.isMyPackage) {
                 val spannable = SpannableString(entry.description)
                 spannable.applySpanForEntireString(StyleSpan(Typeface.BOLD))
                 spannable

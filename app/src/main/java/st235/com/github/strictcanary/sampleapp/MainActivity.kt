@@ -10,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import java.io.File
 import st235.com.github.strictcanary.sampleapp.ui.theme.StrictCanaryTheme
 
 class MainActivity : ComponentActivity() {
@@ -26,6 +27,18 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        violateFilePolicies()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val file = File(externalCacheDir, "world.txt")
+    }
+
+    private fun violateFilePolicies() {
+        val file = File(externalCacheDir, "world.txt")
+        file.createNewFile()
     }
 }
 

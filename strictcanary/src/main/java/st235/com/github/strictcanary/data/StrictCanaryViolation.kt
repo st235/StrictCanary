@@ -185,8 +185,8 @@ internal data class BaselinedStrictCanaryViolation internal constructor(
 internal fun Violation.asUnprocessedStrictPolicyViolation(
     myPackageName: String
 ): UnprocessedStrictCanaryViolation {
-    val violationEntriesStack = stackTrace.map { it.asStrictPolicyViolationEntry() }.toList()
-    val myPackageOffset = violationEntriesStack.indexOfFirst { it.isMyPackage(myPackageName) }
+    val violationEntriesStack = stackTrace.map { it.asStrictPolicyViolationEntry(myPackageName) }.toList()
+    val myPackageOffset = violationEntriesStack.indexOfFirst { it.isMyPackage }
 
     val id = violationEntriesStack.hashCode()
 

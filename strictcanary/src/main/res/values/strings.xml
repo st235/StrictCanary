@@ -29,4 +29,11 @@
 
     <string name="strict_canary_activity_title">Violation</string>
     <string name="strict_canary_activity_stack_trace">Stack Trace</string>
+
+    <string name="strict_canary_activity_list_my_violations_title">My Violations</string>
+    <string name="strict_canary_activity_list_other_violations_title">Other Violations</string>
+    <string name="strict_canary_activity_list_third_party_item">3rd Party</string>
+    <string name="strict_canary_activity_list_empty_group">There are no events</string>
+    <string name="strict_canary_activity_list_leaf_element_line">Line %d</string>
+    <string name="strict_canary_activity_list_all">All Violations</string>
 </resources>

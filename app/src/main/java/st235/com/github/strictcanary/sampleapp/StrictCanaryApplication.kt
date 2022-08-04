@@ -20,5 +20,12 @@ class StrictCanaryApplication: Application() {
 
         val file = File(externalCacheDir, "world.txt")
         file.createNewFile()
+
+        onViolation()
+    }
+
+    fun onViolation() {
+        val file = File(externalCacheDir, "world2.txt")
+        file.exists()
     }
 }
