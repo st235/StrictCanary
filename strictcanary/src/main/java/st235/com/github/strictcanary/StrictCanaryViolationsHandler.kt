@@ -6,7 +6,6 @@ import st235.com.github.strictcanary.data.StrictCanaryViolation
 import st235.com.github.strictcanary.data.StrictCanaryViolationsRepository
 import st235.com.github.strictcanary.data.asUnprocessedStrictPolicyViolation
 import st235.com.github.strictcanary.data.baseline.StrictCanaryBaselineReader
-import st235.com.github.strictcanary.data.baselineType
 import st235.com.github.strictcanary.utils.ViolationProcessor
 import st235.com.github.strictcanary.utils.notifications.NotificationManager
 

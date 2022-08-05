@@ -1,6 +1,6 @@
 package st235.com.github.strictcanary.data
 
-import st235.com.github.strictcanary.utils.LruCache
+import st235.com.github.strictcanary.utils.LruHashSet
 
 internal class StrictCanaryViolationsRepository private constructor() {
 
@@ -23,7 +23,7 @@ internal class StrictCanaryViolationsRepository private constructor() {
 
     }
 
-    private val lruCache = LruCache<StrictCanaryViolation>(MAX_CACHE_SIZE)
+    private val lruCache = LruHashSet<StrictCanaryViolation>(MAX_CACHE_SIZE)
 
     val snapshot: List<StrictCanaryViolation>
     get() {

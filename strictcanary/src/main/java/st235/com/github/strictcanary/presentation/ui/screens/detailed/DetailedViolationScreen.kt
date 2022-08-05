@@ -15,13 +15,17 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Celebration
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -34,8 +38,9 @@ import st235.com.github.flowlayout.compose.FlowLayout
 import st235.com.github.strictcanary.R
 import st235.com.github.strictcanary.data.StrictCanaryViolation
 import st235.com.github.strictcanary.data.StrictCanaryViolationEntry
-import st235.com.github.strictcanary.data.baselineType
 import st235.com.github.strictcanary.data.description
+import st235.com.github.strictcanary.data.hasMyPackageEntries
+import st235.com.github.strictcanary.utils.headline
 import st235.com.github.strictcanary.utils.localisedTitleRes
 import st235.com.github.strictcanary.utils.vectorIcon
 
@@ -63,99 +68,77 @@ internal fun ViolationTags(strictCanaryViolation: StrictCanaryViolation) {
         modifier = Modifier
             .padding(start = 8.dp, end = 8.dp, top = 16.dp)
     ) {
-        ViolationType(strictCanaryViolation)
+        ViolationTag(
+            icon = strictCanaryViolation.type.vectorIcon,
+            content = stringResource(id = strictCanaryViolation.type.localisedTitleRes),
+            backgroundColor = MaterialTheme.colors.secondary,
+            contentColor = MaterialTheme.colors.onSecondary,
+            fontWeight = FontWeight.Bold
+        )
+
         if (strictCanaryViolation.baselineType == StrictCanaryViolation.BaselineType.BASELINED) {
-            ViolationBaselined(strictCanaryViolation)
+            ViolationTag(
+                icon = Icons.Rounded.Close,
+                content = stringResource(id = R.string.strict_canary_detailed_screen_tag_ignored),
+                backgroundColor = MaterialTheme.colors.surface,
+                contentColor = MaterialTheme.colors.onSurface,
+                textStyle = TextStyle(textDecoration = TextDecoration.LineThrough)
+            )
         }
-        ViolationSourceTag(strictCanaryViolation)
-    }
-}
 
-@Composable
-internal fun ViolationType(strictCanaryViolation: StrictCanaryViolation) {
-    val type = strictCanaryViolation.type
+        if (!strictCanaryViolation.hasMyPackageEntries) {
+            ViolationTag(
+                icon = Icons.Rounded.Celebration,
+                content = stringResource(id = R.string.strict_canary_detailed_screen_tag_3rd_party),
+                backgroundColor = MaterialTheme.colors.surface,
+                contentColor = MaterialTheme.colors.onSurface
+            )
+        }
 
-    Row(
-        modifier = Modifier
-            .height(IntrinsicSize.Min)
-            .padding(vertical = 2.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colors.secondary)
-            .padding(vertical = 4.dp)
-    ) {
-        Icon(
-            imageVector = type.vectorIcon,
-            contentDescription = null,
-            tint = MaterialTheme.colors.onSecondary,
-            modifier = Modifier
-                .padding(start = 12.dp)
-                .fillMaxHeight()
-        )
-        Text(
-            text = stringResource(id = type.localisedTitleRes),
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colors.onSecondary,
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
+        ViolationTag(
+            icon = null,
+            content = strictCanaryViolation.headline.fileName ?: stringResource(id = R.string.strict_canary_detailed_screen_tag_unknown_source),
+            backgroundColor = MaterialTheme.colors.surface,
+            contentColor = MaterialTheme.colors.onSurface
         )
     }
 }
 
 @Composable
-internal fun ViolationBaselined(strictCanaryViolation: StrictCanaryViolation) {
+internal fun ViolationTag(
+    icon: ImageVector?,
+    content: String,
+    backgroundColor: Color,
+    contentColor: Color,
+    fontWeight: FontWeight = FontWeight.Medium,
+    textStyle: TextStyle = LocalTextStyle.current
+) {
     Row(
         modifier = Modifier
             .height(IntrinsicSize.Min)
-            .padding(vertical = 2.dp)
+            .padding(vertical = 2.dp, horizontal = 2.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colors.surface)
+            .background(backgroundColor)
             .padding(vertical = 4.dp)
     ) {
-        Icon(
-            imageVector = Icons.Rounded.Close,
-            contentDescription = null,
-            tint = MaterialTheme.colors.onSurface,
-            modifier = Modifier
-                .padding(start = 12.dp)
-                .fillMaxHeight()
-        )
+        if (icon != null) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = contentColor,
+                modifier = Modifier
+                    .padding(start = 12.dp)
+                    .fillMaxHeight()
+            )
+        }
         Text(
-            text = stringResource(id = R.string.strict_canary_detailed_screen_tag_ignored),
+            text = content,
             fontSize = 22.sp,
-            fontWeight = FontWeight.Medium,
-            style = TextStyle(textDecoration = TextDecoration.LineThrough),
+            fontWeight = fontWeight,
+            style = textStyle,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colors.onSurface,
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-        )
-    }
-}
-
-@Composable
-internal fun ViolationSourceTag(strictCanaryViolation: StrictCanaryViolation) {
-    val topEntry =
-        strictCanaryViolation.violationEntriesStack.getOrNull(strictCanaryViolation.myPackageOffset)
-
-    Row(
-        modifier = Modifier
-            .height(IntrinsicSize.Min)
-            .padding(vertical = 2.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colors.surface)
-            .padding(vertical = 4.dp)
-    ) {
-        Text(
-            text = topEntry?.fileName ?: "unknown",
-            fontSize = 22.sp,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 1,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colors.onSurface,
+            color = contentColor,
             modifier = Modifier
                 .padding(horizontal = 8.dp)
         )

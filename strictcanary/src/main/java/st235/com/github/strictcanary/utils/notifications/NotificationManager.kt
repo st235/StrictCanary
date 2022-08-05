@@ -35,7 +35,7 @@ internal class NotificationManager(
 
     internal enum class Strategy {
         EVERY_VIOLATION,
-        GROUP
+        ALL_AT_ONCE
     }
 
     private val notificationManager = NotificationManagerCompat.from(context)
@@ -48,7 +48,7 @@ internal class NotificationManager(
 
         when (strategy) {
             Strategy.EVERY_VIOLATION -> showNotificationForEveryViolation(violation)
-            Strategy.GROUP -> showAggregatedNotification()
+            Strategy.ALL_AT_ONCE -> showAggregatedNotification()
         }
     }
 

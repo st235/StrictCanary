@@ -16,6 +16,7 @@ class StrictCanaryApplication: Application() {
                 .detect(StrictCanaryViolation.Type.DISK_READ)
                 .detect(StrictCanaryViolation.Type.DISK_WRITE)
                 .rawBaseline(R.raw.strictcanary_baseline)
+                .showAllViolationsAtOnce()
                 .build()
         )
 
@@ -25,7 +26,7 @@ class StrictCanaryApplication: Application() {
         onViolation()
     }
 
-    fun onViolation() {
+    private fun onViolation() {
         val file = File(externalCacheDir, "world2.txt")
         file.exists()
     }

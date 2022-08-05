@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
@@ -15,17 +16,22 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import st235.com.github.strictcanary.R
 import st235.com.github.strictcanary.data.StrictCanaryViolation
+import st235.com.github.strictcanary.presentation.ui.screens.components.ViolationsScreensTree
 import st235.com.github.strictcanary.presentation.ui.screens.detailed.DetailedList
-import st235.com.github.strictcanary.presentation.ui.screens.list.ViolationsClassGroup
+import st235.com.github.strictcanary.presentation.ui.screens.list.ViolationsTreeList
 import st235.com.github.strictcanary.presentation.ui.theme.StrictCanaryTheme
-import st235.com.github.strictcanary.presentation.ui.localisedDescription
+import st235.com.github.strictcanary.presentation.ui.screens.components.localisedDescription
+import st235.com.github.strictcanary.presentation.ui.screens.components.skipParent
 
 class StrictCanaryActivity : ComponentActivity() {
 
@@ -51,6 +57,15 @@ class StrictCanaryActivity : ComponentActivity() {
 
     }
 
+    internal data class TopBarState(
+        val content: String,
+        val canGoUpper: Boolean,
+        // we are using skip parents
+        // as we are showing 3 nodes (skipParent -> parent -> node)
+        // on the screen
+        val skipParent: ViolationsScreensTree.Node?
+    )
+
     private val viewModel by viewModels<StrictCanaryViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,65 +79,44 @@ class StrictCanaryActivity : ComponentActivity() {
                 val uiState = viewModel.observeUiState().observeAsState()
                 val uiStateValue = uiState.value
 
-                val canGoUpper = when (uiStateValue) {
-                    is UiState.DetailedViolation -> true
-                    is UiState.ViolationsList -> uiStateValue.treeNode.parentNode != null
-                    else -> false
-                }
-
-                val upperParent = when (uiStateValue) {
-                    is UiState.DetailedViolation -> uiStateValue.violationNode?.parentNode?.parentNode
-                    is UiState.ViolationsList -> uiStateValue.treeNode.parentNode?.parentNode
-                    else -> null
-                }
+                val topBarState = uiStateValue.asTopBarState()
 
                 Scaffold(
                     topBar = {
                         TopAppBar(
                             navigationIcon = {
-                                if (canGoUpper) {
+                                if (topBarState.canGoUpper) {
                                     Icon(
                                         imageVector = Icons.Rounded.ArrowBack,
                                         contentDescription = null,
                                         modifier = Modifier
+                                            .clickable(
+                                                interactionSource = remember { MutableInteractionSource() },
+                                                indication = rememberRipple(bounded = false),
+                                                onClick = { viewModel.changeState(topBarState.skipParent) }
+                                            )
                                             .padding(16.dp)
-                                            .clickable {
-                                                if (upperParent == null) {
-                                                    viewModel.resetState(null)
-                                                } else {
-                                                    viewModel.changeState(upperParent)
-                                                }
-                                            }
                                     )
                                 } else {
                                     Icon(
                                         imageVector = Icons.Rounded.Close,
                                         contentDescription = null,
                                         modifier = Modifier
+                                            .clickable(
+                                                interactionSource = remember { MutableInteractionSource() },
+                                                indication = rememberRipple(bounded = false),
+                                                onClick = { finish() }
+                                            )
                                             .padding(16.dp)
-                                            .clickable {
-                                                finish()
-                                            }
                                     )
                                 }
                             },
                             title = {
-                                when (uiStateValue) {
-                                    is UiState.DetailedViolation ->
-                                        Text(
-                                            text = stringResource(id = R.string.strict_canary_activity_title)
-                                        )
-                                    is UiState.ViolationsList ->
-                                        Text(
-                                            text = uiStateValue.treeNode.localisedDescription()
-                                                ?: stringResource(id = R.string.strict_canary_activity_list_all),
-                                            maxLines = 1
-                                        )
-                                    else ->
-                                        Text(
-                                            stringResource(id = R.string.strict_canary_activity_list_all)
-                                        )
-                                }
+                                Text(
+                                    text = topBarState.content,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
                             }
                         )
                     }
@@ -139,14 +133,39 @@ class StrictCanaryActivity : ComponentActivity() {
     }
 
     @Composable
-    internal fun RootView(
+    private fun UiState?.asTopBarState(): TopBarState {
+        return when (this) {
+            is UiState.DetailedViolation ->
+                TopBarState(
+                    content = stringResource(id = R.string.strict_canary_activity_title),
+                    canGoUpper = true,
+                    skipParent = this.violationNode.skipParent
+                )
+            is UiState.ViolationsList ->
+                TopBarState(
+                    content = this.screenNode.localisedDescription()
+                        ?: stringResource(id = R.string.strict_canary_activity_list_all),
+                    canGoUpper = this.screenNode?.skipParent != null,
+                    skipParent = this.screenNode?.skipParent
+                )
+            else ->
+                TopBarState(
+                    content = stringResource(id = R.string.strict_canary_activity_list_all),
+                    canGoUpper = false,
+                    skipParent = null
+                )
+        }
+    }
+
+    @Composable
+    private fun RootView(
         uiState: UiState?,
         modifier: Modifier = Modifier
     ) {
         when (uiState) {
             is UiState.ViolationsList ->
-                ViolationsClassGroup(
-                    treeNode = uiState.treeNode,
+                ViolationsTreeList(
+                    treeNode = uiState.screenNode,
                     onViolationClickListener = { classGroup ->
                         viewModel.changeState(classGroup)
                     },

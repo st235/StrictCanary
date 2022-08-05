@@ -8,16 +8,29 @@ import st235.com.github.strictcanary.presentation.ui.screens.components.OnViolat
 import st235.com.github.strictcanary.presentation.ui.screens.components.ViolationsGroup
 import st235.com.github.strictcanary.presentation.ui.screens.components.ViolationsGroupList
 import st235.com.github.strictcanary.presentation.ui.screens.components.ViolationsItem
-import st235.com.github.strictcanary.presentation.ui.ViolationsScreensTree
+import st235.com.github.strictcanary.presentation.ui.screens.components.ViolationsScreensTree
 import st235.com.github.strictcanary.utils.headline
-import st235.com.github.strictcanary.presentation.ui.localisedDescription
+import st235.com.github.strictcanary.presentation.ui.screens.components.localisedDescription
 
 @Composable
-internal fun ViolationsClassGroup(
-    treeNode: ViolationsScreensTree.Node,
+internal fun ViolationsTreeList(
+    treeNode: ViolationsScreensTree.Node?,
     modifier: Modifier = Modifier,
     onViolationClickListener: OnViolationClickListener<ViolationsScreensTree.Node>? = null
 ) {
+    /**
+     * There are no any violations
+     */
+    if (treeNode == null) {
+        ViolationsGroupList(
+            groups = emptyList(),
+            onViolationClickListener = onViolationClickListener,
+            modifier = modifier
+        )
+
+        return
+    }
+
     if (treeNode !is ViolationsScreensTree.Node.InterimNode) {
         throw IllegalStateException("Only interim nodes can be used as first level pages nodes")
     }

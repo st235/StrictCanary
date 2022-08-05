@@ -23,7 +23,7 @@ data class StrictCanaryDetectionPolicy internal constructor(
 
         private var detectionMask: Int = 0
         private var shouldSkipThirdPartyLibraries: Boolean = false
-        private var notificationStrategy = NotificationManager.Strategy.GROUP
+        private var notificationStrategy = NotificationManager.Strategy.ALL_AT_ONCE
 
         private var baselineDescriptor: BaselineDescriptor? = null
 
@@ -48,13 +48,13 @@ data class StrictCanaryDetectionPolicy internal constructor(
             return this
         }
 
-        fun showEveryViolationAsNotification(): Builder {
+        fun showEveryViolationAsSeparateNotification(): Builder {
             this.notificationStrategy = NotificationManager.Strategy.EVERY_VIOLATION
             return this
         }
 
-        fun showAllViolationsAsAGroup(): Builder {
-            this.notificationStrategy = NotificationManager.Strategy.GROUP
+        fun showAllViolationsAtOnce(): Builder {
+            this.notificationStrategy = NotificationManager.Strategy.ALL_AT_ONCE
             return this
         }
 

@@ -3,7 +3,6 @@ package st235.com.github.strictcanary.utils
 import androidx.annotation.WorkerThread
 import st235.com.github.strictcanary.data.StrictCanaryViolation
 import st235.com.github.strictcanary.data.StrictCanaryViolation.Type.Companion.isMaskedBy
-import st235.com.github.strictcanary.data.UnprocessedStrictCanaryViolation
 import st235.com.github.strictcanary.data.asBaselinedPartyViolation
 import st235.com.github.strictcanary.data.asWhitelistedViolation
 import st235.com.github.strictcanary.data.baseline.BaselineDocument
@@ -27,7 +26,7 @@ internal class ViolationProcessor(
     }
 
     @WorkerThread
-    fun process(violation: UnprocessedStrictCanaryViolation): StrictCanaryViolation {
+    fun process(violation: StrictCanaryViolation): StrictCanaryViolation {
         val type = violation.type
 
         val shouldProcessViolation = when {

@@ -1,7 +1,6 @@
-package st235.com.github.strictcanary.presentation.ui
+package st235.com.github.strictcanary.presentation.ui.screens.components
 
 import st235.com.github.strictcanary.data.StrictCanaryViolation
-import st235.com.github.strictcanary.data.baselineType
 import st235.com.github.strictcanary.utils.headline
 
 internal class ViolationsScreensTree(
@@ -34,29 +33,7 @@ internal class ViolationsScreensTree(
 
         val size: Int
 
-        val fastForwardLeaf: LeafNode?
-
-        val isLeaf: Boolean
-            get() {
-                return this is LeafNode
-            }
-
         val baselined: Boolean
-            get() {
-                if (this is LeafNode) {
-                    return radixToken.value.baselineType == StrictCanaryViolation.BaselineType.BASELINED
-                } else if (this is InterimNode) {
-                    var childrenBaselined = true
-
-                    for (child in this) {
-                        childrenBaselined = childrenBaselined && child.baselined
-                    }
-
-                    return childrenBaselined
-                } else {
-                    return false
-                }
-            }
 
         class InterimNode(
             override val parentNode: Node?,
@@ -75,20 +52,15 @@ internal class ViolationsScreensTree(
                 return@lazy value
             }
 
-            override val fastForwardLeaf: LeafNode?
-                get() {
-                    var current: Node? = this
+            override val baselined: Boolean by lazy {
+                var childrenBaselined = true
 
-                    while (current != null && !current.isLeaf) {
-                        if (size != 1) {
-                            return null
-                        }
-
-                        current = this.children.first()
-                    }
-
-                    return current as? LeafNode
+                for (child in this) {
+                    childrenBaselined = childrenBaselined && child.baselined
                 }
+
+                childrenBaselined
+            }
 
             override fun iterator(): Iterator<Node> {
                 return children.iterator()
@@ -107,20 +79,26 @@ internal class ViolationsScreensTree(
 
             override val size: Int = 1
 
-            override val fastForwardLeaf: LeafNode = this
-
+            override val baselined: Boolean
+                get() {
+                    return radixToken.value.baselineType == StrictCanaryViolation.BaselineType.BASELINED
+                }
         }
 
     }
 
-    internal val rootNode: Node
+    internal val rootNode: Node?
 
     init {
-        rootNode = violationsRadixDecompositions.asTreeNode(
-            parentNode = null,
-            currentDepth = -1,
-            radixValue = RadixCompositionToken.Root
-        )
+        rootNode = if (violationsRadixDecompositions.isNotEmpty()) {
+            violationsRadixDecompositions.asTreeNode(
+                parentNode = null,
+                currentDepth = -1,
+                radixValue = RadixCompositionToken.Root
+            )
+        } else {
+            null
+        }
     }
 
     private fun List<Array<RadixCompositionToken>>.asTreeNode(

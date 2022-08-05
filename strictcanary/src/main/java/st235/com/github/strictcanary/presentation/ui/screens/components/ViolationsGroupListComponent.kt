@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import st235.com.github.strictcanary.R
+import st235.com.github.strictcanary.utils.leftEllipsize
 
 internal data class ViolationsGroup<T : Any>(
     val header: String?,
@@ -55,7 +57,6 @@ internal fun <T : Any> ViolationsGroupList(
 ) {
     if (groups.isEmpty()) {
         EmptyBanner()
-
     }
 
     LazyColumn(
@@ -119,7 +120,7 @@ internal fun <T : Any> CountedItemRowComponent(
         Text(
             text = violationsItem.counter,
             color = if (violationsItem.enabled) MaterialTheme.colors.onSecondary else MaterialTheme.colors.onSurface,
-            fontSize = 22.sp,
+            fontSize = 18.sp,
             style = textStyle,
             modifier = Modifier
                 .padding(vertical = 2.dp, horizontal = 16.dp)
@@ -130,8 +131,8 @@ internal fun <T : Any> CountedItemRowComponent(
                 .padding(all = 10.dp)
         )
         Text(
-            text = violationsItem.content,
-            fontSize = 22.sp,
+            text = violationsItem.content.leftEllipsize(maxCharacters = 25),
+            fontSize = 18.sp,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Medium,
             style = textStyle,
@@ -154,7 +155,9 @@ internal fun EmptyBanner() {
     ) {
         Image(
             painter = painterResource(R.drawable.ic_strtict_canary_filled_colorful),
-            contentDescription = null
+            contentDescription = null,
+            modifier = Modifier
+                .defaultMinSize(minWidth = 72.dp, minHeight = 72.dp)
         )
         Text(
             text = stringResource(R.string.strict_canary_activity_list_empty_group),
@@ -162,7 +165,7 @@ internal fun EmptyBanner() {
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Medium,
             modifier = Modifier
-                .padding(end = 8.dp)
+                .padding(all = 8.dp)
         )
     }
 }
