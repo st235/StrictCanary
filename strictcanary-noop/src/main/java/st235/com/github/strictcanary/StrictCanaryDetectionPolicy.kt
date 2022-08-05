@@ -25,6 +25,14 @@ class StrictCanaryDetectionPolicy {
             return this
         }
 
+        fun showEveryViolationAsSeparateNotification(): Builder {
+            return this
+        }
+
+        fun showAllViolationsAtOnce(): Builder {
+            return this
+        }
+
         fun detect(type: StrictCanaryViolation.Type): Builder {
             return this
         }

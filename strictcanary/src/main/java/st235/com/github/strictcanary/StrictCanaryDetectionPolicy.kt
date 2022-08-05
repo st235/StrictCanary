@@ -8,9 +8,11 @@ import st235.com.github.strictcanary.data.baseline.BaselineDescriptor
 import st235.com.github.strictcanary.data.baseline.BaselineFormat
 import st235.com.github.strictcanary.data.baseline.RawBaselineResource
 import st235.com.github.strictcanary.data.detection.DetectionDescriptor
+import st235.com.github.strictcanary.utils.notifications.NotificationManager
 
 data class StrictCanaryDetectionPolicy internal constructor(
     internal val context: Context,
+    internal val notificationStrategy: NotificationManager.Strategy,
     internal val detectionDescriptor: DetectionDescriptor,
     internal val baselineDescriptor: BaselineDescriptor?
 ) {
@@ -21,6 +23,7 @@ data class StrictCanaryDetectionPolicy internal constructor(
 
         private var detectionMask: Int = 0
         private var shouldSkipThirdPartyLibraries: Boolean = false
+        private var notificationStrategy = NotificationManager.Strategy.ALL_AT_ONCE
 
         private var baselineDescriptor: BaselineDescriptor? = null
 
@@ -45,6 +48,16 @@ data class StrictCanaryDetectionPolicy internal constructor(
             return this
         }
 
+        fun showEveryViolationAsSeparateNotification(): Builder {
+            this.notificationStrategy = NotificationManager.Strategy.EVERY_VIOLATION
+            return this
+        }
+
+        fun showAllViolationsAtOnce(): Builder {
+            this.notificationStrategy = NotificationManager.Strategy.ALL_AT_ONCE
+            return this
+        }
+
         fun detect(type: StrictCanaryViolation.Type): Builder {
             detectionMask = detectionMask or type.mask
             return this
@@ -57,6 +70,7 @@ data class StrictCanaryDetectionPolicy internal constructor(
 
             return StrictCanaryDetectionPolicy(
                 context = this.context,
+                notificationStrategy = this.notificationStrategy,
                 detectionDescriptor = DetectionDescriptor(
                     mask = detectionMask,
                     shouldSkipThirdPartyLibraries = this.shouldSkipThirdPartyLibraries

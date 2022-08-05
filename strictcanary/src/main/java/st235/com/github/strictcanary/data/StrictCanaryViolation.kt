@@ -1,6 +1,5 @@
 package st235.com.github.strictcanary.data
 
-import android.content.Context
 import android.os.Build
 import android.os.Parcelable
 import android.os.strictmode.CleartextNetworkViolation
@@ -30,8 +29,14 @@ import st235.com.github.strictcanary.utils.asStrictPolicyViolationEntry
 data class StrictCanaryViolation internal constructor(
     internal val id: Int,
     internal val type: Type,
-    internal val violationEntriesStack: List<StrictCanaryViolationEntry>
+    internal val myPackageOffset: Int,
+    internal val violationEntriesStack: List<StrictCanaryViolationEntry>,
+    internal val baselineType: BaselineType
 ): Parcelable {
+
+    internal operator fun get(index: Int): StrictCanaryViolationEntry {
+        return violationEntriesStack[index]
+    }
 
     enum class Type(
         internal val id: String,
@@ -144,20 +149,28 @@ data class StrictCanaryViolation internal constructor(
         }
     }
 
-    internal operator fun get(index: Int): StrictCanaryViolationEntry {
-        return violationEntriesStack[index]
+    internal enum class BaselineType {
+        UNKNOWN,
+        BASELINED,
+        WHITELISTED
     }
+
 }
 
-internal fun Violation.asStrictPolicyViolation(): StrictCanaryViolation {
-    val violationEntriesStack = stackTrace.map { it.asStrictPolicyViolationEntry() }.toList()
+internal fun Violation.asUnprocessedStrictPolicyViolation(
+    myPackageName: String
+): StrictCanaryViolation {
+    val violationEntriesStack = stackTrace.map { it.asStrictPolicyViolationEntry(myPackageName) }.toList()
+    val myPackageOffset = violationEntriesStack.indexOfFirst { it.isMyPackage }
 
     val id = violationEntriesStack.hashCode()
 
     return StrictCanaryViolation(
         id = id,
         type = type,
-        violationEntriesStack = violationEntriesStack
+        myPackageOffset = myPackageOffset,
+        violationEntriesStack = violationEntriesStack,
+        baselineType = StrictCanaryViolation.BaselineType.UNKNOWN
     )
 }
 
@@ -220,10 +233,19 @@ private fun Violation.matchWithTypeByClass(): StrictCanaryViolation.Type? {
     }
 }
 
-internal fun StrictCanaryViolation.hasMyPackageEntries(context: Context): Boolean {
-    return myPackageOffset(context) >= 0
+internal val StrictCanaryViolation.hasMyPackageEntries: Boolean
+    get() {
+        return myPackageOffset >= 0
+    }
+
+internal fun StrictCanaryViolation.asBaselinedPartyViolation(): StrictCanaryViolation {
+    return this.copy(
+        baselineType = StrictCanaryViolation.BaselineType.BASELINED
+    )
 }
 
-internal fun StrictCanaryViolation.myPackageOffset(context: Context): Int {
-    return violationEntriesStack.indexOfFirst { it.isMyPackage(context) }
+internal fun StrictCanaryViolation.asWhitelistedViolation(): StrictCanaryViolation {
+    return this.copy(
+        baselineType = StrictCanaryViolation.BaselineType.WHITELISTED
+    )
 }
