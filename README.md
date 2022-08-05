@@ -4,6 +4,7 @@
 
 ![Min Android Sdk](https://img.shields.io/badge/minSdkVersion-28-FF6E40.svg)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.st235/strict-canary.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.st235%22%20AND%20a:%strict-canary%22)
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/algoclub)
 
 Strict Canary is a small tool to support soft "strict mode" enforcing. For more information see
 [Android Strict Mode](https://developer.android.com/reference/android/os/StrictMode).
@@ -12,18 +13,31 @@ Strict Canary is a small tool to support soft "strict mode" enforcing. For more 
 
 We think that crashes or strict mode dialog windows can be really annoying, especially, in a large
 project, therefore, Strict Canary offers "soft" implementation of the strict mode. When a violation
-is detected Strict Canary will show a small and friendly notification, like, the notifications below:
+is detected Strict Canary will show a small and friendly notification, like, the notification below:
+
+| Group notification |
+| ------------- |
+| ![Group Notification](./images/group_notification.jpeg) |
+
+Moreover, this notification is clickable. By clicking it will see the list of most recent 150 violations that
+have happened since the application was started.
+
+| The most recent violations |
+| ------------- |
+| ![The most recent violations](./images/strict_canary_list_activity_root.jpeg) |
+
+However, if you wanna have more control over violations you can split this group notification into
+a smaller notifications for every violation. You can see the an example of standalone notifications below:
 
 | Collapsed  | Expanded |
 | ------------- | ------------- |
 | ![Notification Collapsed](./images/notification_collapsed.jpeg) | ![Notification Expanded](./images/notification_expanded.jpeg) |
 
-Moreover, these notifications are clickable. By clicking one of them an activity will open allowing 
-you to see detailed stack trace and manage the violation better.
+And what do you think - they are also clickable! Click it to see the detailed information.
 
-| Light  | Dark |
-| ------------- | ------------- |
-| ![Light](./images/strict_canary_activity_light.jpeg) | ![Dark](./images/strict_canary_activity_dark.jpeg) |
+| Detailed violation screen |
+| ------------- |
+| ![Detailed violation screen](./images/strict_canary_detailed_activity.jpeg) |
 
 ## Download
 
@@ -99,6 +113,9 @@ and provide `StrictCanaryDetectionPolicy` to `StrictCanary` global instance.
             StrictCanaryDetectionPolicy.Builder(this)
                 .detect(StrictCanaryViolation.Type.DISK_READ)
                 .detect(StrictCanaryViolation.Type.DISK_WRITE)
+                .rawBaseline(R.raw.strictcanary_baseline)
+                .showAllViolationsAtOnce()
+                // or .showEveryViolationAsSeparateNotification()
                 .build()
         )
     }
@@ -133,6 +150,32 @@ define an empty group, you need to specify an `id` attribute;
 ```
 
 P.S.: Now you're good to go. Let's do the main thread great again!
+
+### Misc
+
+- Dark mode 🌗
+
+| Root Screen | Detailed View |
+| ------------- | ------------- |
+| ![Root Screen](./images/strict_canary_list_activity_root_dark.jpeg) | ![Detailed View](./images/strict_canary_detailed_activity_dark.jpeg) |
+
+- Violations that are ignored by baseline file are visually over crossed
+
+| Ignored violations |
+| ------------- |
+| ![Ignored violations](./images/strict_canary_list_activity_application.jpeg) |
+
+- More tags supported: __ignored by baseline__, __3rd party__, __source__
+
+| Tags |
+| ------------- |
+| ![Tags](./images/strict_canary_detailed_activity_tags.jpeg) |
+
+- If no violations were found you will see our mascot bird 🐤
+
+| No Violations |
+| ------------- |
+| ![No Violations](./images/strict_canary_no_violations.jpeg) |
 
 ### License
 

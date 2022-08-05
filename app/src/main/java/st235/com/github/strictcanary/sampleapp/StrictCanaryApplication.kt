@@ -17,6 +17,7 @@ class StrictCanaryApplication: Application() {
                 .detect(StrictCanaryViolation.Type.DISK_WRITE)
                 .rawBaseline(R.raw.strictcanary_baseline)
                 .showAllViolationsAtOnce()
+                // or .showEveryViolationAsSeparateNotification()
                 .build()
         )
 
