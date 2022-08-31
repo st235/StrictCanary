@@ -3,7 +3,7 @@ package st235.com.github.strictcanary.utils
 import androidx.annotation.WorkerThread
 import st235.com.github.strictcanary.data.StrictCanaryViolation
 import st235.com.github.strictcanary.data.StrictCanaryViolation.Type.Companion.isMaskedBy
-import st235.com.github.strictcanary.data.asBaselinedPartyViolation
+import st235.com.github.strictcanary.data.asBaselinedViolation
 import st235.com.github.strictcanary.data.asWhitelistedViolation
 import st235.com.github.strictcanary.data.baseline.BaselineDocument
 import st235.com.github.strictcanary.data.baseline.BaselineResource
@@ -38,7 +38,10 @@ internal class ViolationProcessor(
         }
 
         return if (!shouldProcessViolation) {
-            violation.asBaselinedPartyViolation()
+            val issue = baseLine.findIssue(violation)
+            violation.asBaselinedViolation(
+                baselineMessage = issue?.message
+            )
         } else {
             violation.asWhitelistedViolation()
         }

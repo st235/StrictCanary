@@ -8,19 +8,23 @@ internal data class BaselineDocument(
     val issues: Map<String, List<Issue>>
 ) {
 
-    fun contains(violation: StrictCanaryViolation): Boolean {
+    fun findIssue(violation: StrictCanaryViolation): Issue? {
         val violationTypeInternalId = violation.type.id
         val ignoredIssues: List<Issue> = issues.getOrDefault(violationTypeInternalId, emptyList())
 
         for (issue in ignoredIssues) {
             for (entry in violation.violationEntriesStack) {
                 if (issue.shouldIgnore(entry)) {
-                    return true
+                    return issue
                 }
             }
         }
 
-        return false
+        return null
+    }
+
+    fun contains(violation: StrictCanaryViolation): Boolean {
+        return findIssue(violation) != null
     }
 
     companion object {

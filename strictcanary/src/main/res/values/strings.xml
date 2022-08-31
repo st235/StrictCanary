@@ -35,6 +35,7 @@
     <string name="strict_canary_detailed_screen_tag_3rd_party">3rd Party</string>
 
     <string name="strict_canary_activity_title">Violation</string>
+    <string name="strict_canary_activity_message">Ignore Reason</string>
     <string name="strict_canary_activity_stack_trace">Stack Trace</string>
 
     <string name="strict_canary_activity_list_my_violations_title">My Violations</string>

@@ -23,6 +23,7 @@ import android.os.strictmode.UnsafeIntentLaunchViolation
 import android.os.strictmode.UntaggedSocketViolation
 import android.os.strictmode.Violation
 import kotlinx.parcelize.Parcelize
+import st235.com.github.strictcanary.data.baseline.Issue
 import st235.com.github.strictcanary.utils.asStrictPolicyViolationEntry
 
 @Parcelize
@@ -31,7 +32,8 @@ data class StrictCanaryViolation internal constructor(
     internal val type: Type,
     internal val myPackageOffset: Int,
     internal val violationEntriesStack: List<StrictCanaryViolationEntry>,
-    internal val baselineType: BaselineType
+    internal val baselineType: BaselineType,
+    internal val baselineMessage: String?
 ): Parcelable {
 
     internal operator fun get(index: Int): StrictCanaryViolationEntry {
@@ -170,7 +172,8 @@ internal fun Violation.asUnprocessedStrictPolicyViolation(
         type = type,
         myPackageOffset = myPackageOffset,
         violationEntriesStack = violationEntriesStack,
-        baselineType = StrictCanaryViolation.BaselineType.UNKNOWN
+        baselineType = StrictCanaryViolation.BaselineType.UNKNOWN,
+        baselineMessage = null
     )
 }
 
@@ -238,14 +241,18 @@ internal val StrictCanaryViolation.hasMyPackageEntries: Boolean
         return myPackageOffset >= 0
     }
 
-internal fun StrictCanaryViolation.asBaselinedPartyViolation(): StrictCanaryViolation {
+internal fun StrictCanaryViolation.asBaselinedViolation(
+    baselineMessage: String?
+): StrictCanaryViolation {
     return this.copy(
-        baselineType = StrictCanaryViolation.BaselineType.BASELINED
+        baselineType = StrictCanaryViolation.BaselineType.BASELINED,
+        baselineMessage = baselineMessage
     )
 }
 
 internal fun StrictCanaryViolation.asWhitelistedViolation(): StrictCanaryViolation {
     return this.copy(
-        baselineType = StrictCanaryViolation.BaselineType.WHITELISTED
+        baselineType = StrictCanaryViolation.BaselineType.WHITELISTED,
+        baselineMessage = null
     )
 }

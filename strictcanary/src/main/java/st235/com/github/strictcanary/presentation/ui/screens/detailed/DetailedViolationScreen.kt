@@ -51,15 +51,40 @@ internal fun DetailedList(
 ) {
     Column(modifier) {
         ViolationTags(strictCanaryViolation)
+        if (strictCanaryViolation.baselineMessage != null) {
+            ViolationMessage(violationMessage = strictCanaryViolation.baselineMessage)
+        }
         Text(
             text = stringResource(id = R.string.strict_canary_activity_stack_trace),
-            fontSize = 26.sp,
+            fontSize = 24.sp,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colors.onSurface,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp)
         )
         ViolationStackTraceBox(strictCanaryViolation)
     }
+}
+
+@Composable
+internal fun ViolationMessage(violationMessage: String) {
+    Text(
+        text = stringResource(id = R.string.strict_canary_activity_message),
+        fontSize = 24.sp,
+        fontWeight = FontWeight.Medium,
+        color = MaterialTheme.colors.onSurface,
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp)
+    )
+    Text(
+        text = violationMessage,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Normal,
+        color = MaterialTheme.colors.onSurface,
+        modifier = Modifier
+            .padding(horizontal = 8.dp, vertical = 8.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colors.surface)
+            .padding(horizontal = 8.dp, vertical = 8.dp)
+    )
 }
 
 @Composable
@@ -133,14 +158,14 @@ internal fun ViolationTag(
         }
         Text(
             text = content,
-            fontSize = 22.sp,
+            fontSize = 16.sp,
             fontWeight = fontWeight,
             style = textStyle,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             color = contentColor,
             modifier = Modifier
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = 12.dp)
         )
     }
 }

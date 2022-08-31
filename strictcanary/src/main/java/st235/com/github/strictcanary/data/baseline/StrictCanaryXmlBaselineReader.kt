@@ -134,11 +134,11 @@ internal class StrictCanaryXmlBaselineReader(
                     throw IllegalStateException("Expected text but found ${xmlPullParser.eventType}")
                 }
 
-                issues.add(EntryIssue(message, xmlPullParser.text))
+                issues.add(EntryIssue(message, xmlPullParser.text.trim()))
 
                 xmlPullParser.nextIgnoringText()
             } else {
-                issues.add(FileIssue(message, path))
+                issues.add(FileIssue(message, path.trim()))
                 xmlPullParser.nextIgnoringText()
             }
 
