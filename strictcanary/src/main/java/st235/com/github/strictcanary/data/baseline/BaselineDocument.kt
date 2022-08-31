@@ -29,10 +29,15 @@ internal data class BaselineDocument(
 }
 
 internal sealed interface Issue {
+
+    val message: String?
+
     fun shouldIgnore(entry: StrictCanaryViolationEntry): Boolean
+
 }
 
 internal class FileIssue(
+    override val message: String?,
     private val filePath: String
 ): Issue {
 
@@ -53,19 +58,23 @@ internal class FileIssue(
 
         other as FileIssue
 
+        if (message != other.message) return false
         if (filePath != other.filePath) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        return filePath.hashCode()
+        var result = message?.hashCode() ?: 0
+        result = 31 * result + filePath.hashCode()
+        return result
     }
 
 
 }
 
 internal class EntryIssue(
+    override val message: String?,
     private val codeEntry: String
 ): Issue {
 
@@ -81,13 +90,16 @@ internal class EntryIssue(
 
         other as EntryIssue
 
+        if (message != other.message) return false
         if (codeEntry != other.codeEntry) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        return codeEntry.hashCode()
+        var result = message?.hashCode() ?: 0
+        result = 31 * result + codeEntry.hashCode()
+        return result
     }
 
 

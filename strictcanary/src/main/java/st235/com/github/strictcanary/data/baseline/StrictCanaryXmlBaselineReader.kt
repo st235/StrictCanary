@@ -24,6 +24,7 @@ internal class StrictCanaryXmlBaselineReader(
         const val ARG_ISSUE_ID = "id"
         const val KEY_IGNORE = "ignore"
         const val ARG_IGNORE_PATH = "path"
+        const val ARG_MESSAGE = "message"
     }
 
     private val issuesIds: Set<String> by lazy {
@@ -123,6 +124,7 @@ internal class StrictCanaryXmlBaselineReader(
 
         while (xmlPullParser.eventType == XmlPullParser.START_TAG &&
             xmlPullParser.name == KEY_IGNORE) {
+            val message: String? = xmlPullParser.getAttributeValue(null, ARG_MESSAGE)
             val path: String? = xmlPullParser.getAttributeValue(null, ARG_IGNORE_PATH)
 
             if (path == null) {
@@ -132,11 +134,11 @@ internal class StrictCanaryXmlBaselineReader(
                     throw IllegalStateException("Expected text but found ${xmlPullParser.eventType}")
                 }
 
-                issues.add(EntryIssue(xmlPullParser.text))
+                issues.add(EntryIssue(message, xmlPullParser.text))
 
                 xmlPullParser.nextIgnoringText()
             } else {
-                issues.add(FileIssue(path))
+                issues.add(FileIssue(message, path))
                 xmlPullParser.nextIgnoringText()
             }
 

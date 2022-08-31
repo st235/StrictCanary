@@ -28,9 +28,9 @@ class StrictCanaryXmlBaselineReaderTest {
                     BaselineDocument(
                         issues = mapOf(
                             "DiskRead" to listOf(
-                                EntryIssue("a"),
-                                EntryIssue("b"),
-                                FileIssue("c"),
+                                EntryIssue(null, "a"),
+                                EntryIssue(null, "b"),
+                                FileIssue(null, "c"),
                             )
                         )
                     )
@@ -40,14 +40,31 @@ class StrictCanaryXmlBaselineReaderTest {
                     BaselineDocument(
                         issues = mapOf(
                             "DiskRead" to listOf(
-                                EntryIssue("a"),
-                                EntryIssue("b"),
-                                FileIssue("c"),
+                                EntryIssue(null, "a"),
+                                EntryIssue(null, "b"),
+                                FileIssue(null, "c"),
                             ),
                             "DiskWrite" to listOf(
-                                EntryIssue("a*"),
-                                FileIssue("/b"),
-                                EntryIssue("*b"),
+                                EntryIssue(null, "a*"),
+                                FileIssue(null, "/b"),
+                                EntryIssue(null, "*b"),
+                            )
+                        )
+                    )
+                ),
+                arrayOf(
+                    "xml/strictcanary_baseline_with_messages.xml",
+                    BaselineDocument(
+                        issues = mapOf(
+                            "DiskRead" to listOf(
+                                EntryIssue("A was ignored", "a"),
+                                EntryIssue(null, "b"),
+                                FileIssue("C was ignored", "c"),
+                            ),
+                            "DiskWrite" to listOf(
+                                EntryIssue(null, "a*"),
+                                FileIssue(null, "/b"),
+                                EntryIssue(null, "*b"),
                             )
                         )
                     )
