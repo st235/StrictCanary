@@ -36,7 +36,13 @@
 
     <string name="strict_canary_activity_title">Violation</string>
     <string name="strict_canary_activity_message">Ignore Reason</string>
+    <string name="strict_canary_activity_clipboard_info">Copy Information</string>
     <string name="strict_canary_activity_stack_trace">Stack Trace</string>
+
+    <string name="strict_canary_activity_clipboard_info_type">Type: %s</string>
+    <string name="strict_canary_activity_clipboard_info_entry">Entry: %s</string>
+    <string name="strict_canary_activity_clipboard_info_copy">Copy</string>
+    <string name="strict_canary_activity_clipboard_info_copied">Copied</string>
 
     <string name="strict_canary_activity_list_my_violations_title">My Violations</string>
     <string name="strict_canary_activity_list_other_violations_title">Other Violations</string>
