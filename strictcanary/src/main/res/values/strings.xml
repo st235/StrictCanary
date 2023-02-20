@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="strict_canary_notification_channel_title">Strict Canary Notifications</string>
+    <string name="strict_canary_notification_channel_description">Strict Canary is a debug tool for android strict policies detection.</string>
+
+    <string name="strict_canary_notification_every_title">%s Violation Detected</string>
+
+    <string name="strict_canary_notification_group_title">Strict Policies Breach Detected</string>
+    <string name="strict_canary_notification_group_description">Some of the violations that you are detecting are breached. Click the notification for more information.</string>
+
+    <string name="strict_canary_type_title_disk_read">Disk Read</string>
+    <string name="strict_canary_type_title_disk_write">Disk Write</string>
+    <string name="strict_canary_type_title_network">Network</string>
+    <string name="strict_canary_type_title_custom_slow_calls">Custom Slow Calls</string>
+    <string name="strict_canary_type_title_resource_mismatch">Resource Mismatch</string>
+    <string name="strict_canary_type_title_explicit_gc">Explicit GC</string>
+    <string name="strict_canary_type_title_sql_object_leaks">Sql Objects Leaks</string>
+    <string name="strict_canary_type_title_closable_leaks">Closable Leaks</string>
+    <string name="strict_canary_type_title_intent_receiver_leaks">Intent Receiver Leaks</string>
+    <string name="strict_canary_type_title_instance_count">Instance Count</string>
+    <string name="strict_canary_type_title_credentials_leaks">Credentials Leaks</string>
+    <string name="strict_canary_type_title_file_uri_exposure">File Uri Exposure</string>
+    <string name="strict_canary_type_title_cleartext_network">Cleartext Network</string>
+    <string name="strict_canary_type_title_content_uri_without_permission">Content Uri Without Permission</string>
+    <string name="strict_canary_type_title_untagged_socket">Untagged Socket</string>
+    <string name="strict_canary_type_title_non_sdk_api_usage">Non Sdk Api Usage</string>
+    <string name="strict_canary_type_title_implicit_direct_boot">Implicit Direct Boot</string>
+    <string name="strict_canary_type_title_incorrect_context_use">Incorrect Context Use</string>
+    <string name="strict_canary_type_title_unsafe_intent_launch">Unsafe Intent Launch</string>
+    <string name="strict_canary_type_title_unbuffered_io">Unbuffered IO</string>
+    <string name="strict_canary_type_title_unknown">Unknown</string>
+
+    <string name="strict_canary_detailed_screen_tag_ignored">Baseline ignored</string>
+    <string name="strict_canary_detailed_screen_tag_unknown_source">Unknown source</string>
+    <string name="strict_canary_detailed_screen_tag_3rd_party">3rd Party</string>
+
+    <string name="strict_canary_activity_title">Violation</string>
+    <string name="strict_canary_activity_message">Ignore Reason</string>
+    <string name="strict_canary_activity_stack_trace">Stack Trace</string>
+
+    <string name="strict_canary_activity_list_my_violations_title">My Violations</string>
+    <string name="strict_canary_activity_list_other_violations_title">Other Violations</string>
+    <string name="strict_canary_activity_list_third_party_item">3rd Party</string>
+    <string name="strict_canary_activity_list_empty_group">Hooray, no violations were found!</string>
+    <string name="strict_canary_activity_list_leaf_element_line">Line %d</string>
+    <string name="strict_canary_activity_list_all">All Violations</string>
+</resources>

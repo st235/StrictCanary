@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strict-canary>
+
+    <issue id="DiskRead">
+        <ignore message="Was ignored on purpose as this code is used in a new feature">
+            st235.com.github.strictcanary.sampleapp.MainActivity
+        </ignore>
+        <ignore>st235.com.github.strictcanary.sampleapp.StrictCanaryApplication.onViolation</ignore>
+    </issue>
+
+    <issue id="DiskWrite">
+        <ignore>st235.com.github.strictcanary.sampleapp.MainActivity</ignore>
+    </issue>
+
+</strict-canary>
